@@ -210,6 +210,9 @@ export interface Options {
     disableTls?: boolean;
 }
 
+/** Helper to remove unwanted chars from namespaces */
+const filterNs = (sub: string) => sub.toLowerCase().replace(/[^a-z0-9-]/g, '');
+
 /**
  * Create a logger from the options.
  */
@@ -224,7 +227,8 @@ export const createLogger = (opts: Options): Logger => {
     // to console
     const conslogger = opts.disableConsole ? null : createConsLogger(output);
 
-    const relativeLogger = (namespace: string) => {
+    // create a logger for a namespace
+    const nsLogger = (namespace: string) => {
         // tslint:disable-next-line:no-let
         let sendDebug = false;
         const doLog = (severity: Severity, args: any[]) => {
@@ -243,13 +247,13 @@ export const createLogger = (opts: Options): Logger => {
             info: (...args: any[]) => doLog(Severity.Info, args),
             warn: (...args: any[]) => doLog(Severity.Warn, args),
             error: (...args: any[]) => doLog(Severity.Error, args),
-            sublogger: (sub: string) => relativeLogger(`${namespace}-${sub}`),
+            sublogger: (sub: string) => nsLogger(`${namespace}.${filterNs(sub)}`),
             setDebug: (debug: boolean) => {
                 sendDebug = debug;
             },
         };
     };
 
-    return relativeLogger(opts.appName);
+    return nsLogger(filterNs(opts.appName));
 };
 
