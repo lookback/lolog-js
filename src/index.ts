@@ -3,6 +3,7 @@ import { createConsLogger } from "./conslog";
 import { Severity, prepareLog } from "./prepare";
 import { isBrowser } from "./is-browser";
 import { createLogglyLogger } from "./loggly";
+import { mkValidator } from "./validator";
 
 /**
  * The overloaded variants of logging.
@@ -52,24 +53,8 @@ const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
 /**
  * Check if the given argument is a `LogWellKnown`. Every single field must be well known.
  */
-export const isWellKnown = (t: any, reject?: (msg: string) => void): t is WellKnown => {
-    if (!t) {
-        reject && reject(`"${t}" is not a value`);
-        return false;
-    }
-    for (const f of Object.keys(t)) {
-        const type = WellKnown[f];
-        if (!type) {
-            reject && reject(`${f} is not a well known field`);
-            return false;
-        }
-        if ((typeof t[f]) !== type) {
-            reject && reject(`${f} is not a ${type}`);
-            return false;
-        }
-    }
-    return true;
-};
+export const isWellKnown: (t: any, reject?: (msg: string) => void) => t is WellKnown
+    = mkValidator(WellKnown);
 
 /**
  * Logging instance.
@@ -111,7 +96,7 @@ export interface Logger {
     error: LogFunction;
 
     /**
-     * Create a sublogger that will be namespaced under this logger.
+     * Create a sublogger that will be namespaced under this logger. Limited to `/[a-z0-9-]+/`.
      */
     sublogger: (subname: string) => Logger;
 
@@ -174,7 +159,7 @@ export interface Options {
     host: string;
 
     /**
-     * Application name.
+     * Application name. Limited to `/[a-z0-9-]+/`.
      */
     appName: string;
 
@@ -210,6 +195,24 @@ export interface Options {
     disableTls?: boolean;
 }
 
+const ValidOptions = {
+    logHost: 'string',
+    logPort: 'number',
+    host: 'string',
+    appName: 'string',
+    compliance: 'string',
+    apiKey: 'string',
+    env: 'string',
+    disableConsole: 'boolean',
+    idleTimeout: 'number',
+    disableTls: 'boolean',
+};
+
+export const isOptions: (t: any, reject?: (msg: string) => void) => t is Options
+    = mkValidator(ValidOptions, [
+        'logHost', 'logPort', 'host', 'appName', 'compliance', 'apiKey', 'env',
+    ]);
+
 /** Helper to remove unwanted chars from namespaces */
 const filterNs = (sub: string) => sub.toLowerCase().replace(/[^a-z0-9-]/g, '');
 
@@ -217,6 +220,11 @@ const filterNs = (sub: string) => sub.toLowerCase().replace(/[^a-z0-9-]/g, '');
  * Create a logger from the options.
  */
 export const createLogger = (opts: Options): Logger => {
+
+    isOptions(opts, (msg) => {
+        throw new Error(`Invalid options: ${msg}`);
+    });
+
     //
     // create the syslog instance
     const syslogger = isBrowser() ? createLogglyLogger(opts) : createSyslogger(opts);
