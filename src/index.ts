@@ -175,6 +175,10 @@ export interface Options {
      * connection due to being idle. Millis.
      */
     idleTimeout?: number;
+    /**
+     * If we are to disable tls. This should only be used for unit tests.
+     */
+    disableTls?: boolean;
 }
 
 /**

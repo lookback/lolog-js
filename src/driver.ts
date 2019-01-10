@@ -92,14 +92,17 @@ export interface Client {
     send(msg: SyslogMessage): Promise<void>;
 }
 
-export const createClient = async (
-    host: string,
-    port: number,
-    timeout: number,
-    useWebSocket: boolean,
-): Promise<Client> => {
-    const connect = useWebSocket ? connectWebsocket : connectSocket;
-    const conn = await connect(host, port).catch(e => {
+export interface ClientOpts {
+    host: string;
+    port: number;
+    useWebSocket: boolean;
+    useTls: boolean;
+    timeout: number;
+}
+
+export const createClient = async (copts: ClientOpts): Promise<Client> => {
+    const connect = copts.useWebSocket ? connectWebsocket : connectSocket;
+    const conn = await connect(copts).catch(e => {
         lastErr = e;
         return null;
     });
@@ -115,7 +118,7 @@ export const createClient = async (
             } catch (e) {
             }
         };
-        conn.setTimeout(timeout, () => {
+        conn.setTimeout(copts.timeout, () => {
             disconnect(new Error('socket timeout'));
         });
         conn.on('error', (e) => {
@@ -154,15 +157,25 @@ interface Sock {
     write: (msg: string, cb: (e: Error | null) => void) => void;
 }
 
-const connectWebsocket = (host: string, port: number): Promise<Sock> => new Promise((rs, rj) => {
+const connectWebsocket = (copts: ClientOpts): Promise<Sock> => new Promise((rs, rj) => {
 
 });
 
-const connectSocket = (host: string, port: number): Promise<Sock> => new Promise((rs, rj) => {
+const connectSocket = (copts: ClientOpts): Promise<Sock> => new Promise((rs, rj) => {
     const net = require('net');
-    const family = net.isIPv6(host) ? 6 : 4;
+    const tls = require('tls');
+    const family = net.isIPv6(copts.host) ? 6 : 4;
     try {
-        const conn = net.createConnection({ host, port, family }, () => rs(conn));
+        const o = {
+            host: copts.host,
+            port: copts.port,
+            family,
+        };
+        if (copts.useTls) {
+            const conn = tls.connect(o, () => rs(conn));
+        } else {
+            const conn = net.createConnection(o, () => rs(conn));
+        }
     } catch (e) {
         rj(e);
     }

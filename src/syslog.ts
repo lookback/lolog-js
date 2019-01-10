@@ -19,7 +19,13 @@ export const createSyslogger = (opts: Options) => {
     // connect the client.
     const connectClient = async () => {
         const useWebSocket = !!isBrowser();
-        client = await createClient(opts.logHost, opts.logPort, idleTimeout, useWebSocket);
+        client = await createClient({
+            host: opts.logHost,
+            port: opts.logPort,
+            useWebSocket,
+            useTls: !opts.disableTls,
+            timeout: idleTimeout,
+        });
     };
 
     const clientLog = async (

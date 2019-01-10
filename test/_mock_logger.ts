@@ -32,6 +32,7 @@ export const createMockLogger = async () => {
         appName: 'test',
         apiKey: 'apikey',
         compliance: Compliance.Full,
+        disableTls: true,
     });
     return { msg, log };
 };
