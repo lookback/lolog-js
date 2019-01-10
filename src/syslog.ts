@@ -4,6 +4,9 @@ import { createClient, Client, Facility, SyslogSeverity } from "./driver";
 
 const wait = (ms: number) => new Promise(rs => setTimeout(rs, ms));
 
+const isBrowser =
+    new Function("(function(){return typeof window !== 'undefined' && this===window})();");
+
 export const createSyslogger = (opts: Options) => {
     // Holds the client when it is connected. When we detect a disconnect or
     // error, we remove the instance and reconnect on next log line.
@@ -15,7 +18,8 @@ export const createSyslogger = (opts: Options) => {
 
     // connect the client.
     const connectClient = async () => {
-        client = await createClient(opts.logHost, opts.logPort, idleTimeout);
+        const useWebSocket = !!isBrowser();
+        client = await createClient(opts.logHost, opts.logPort, idleTimeout, useWebSocket);
     };
 
     const clientLog = async (

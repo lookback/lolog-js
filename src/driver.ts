@@ -1,5 +1,3 @@
-import * as net from 'net';
-
 /**
  * Facility numbers according to spec.
  */
@@ -97,8 +95,10 @@ export interface Client {
 export const createClient = async (
     host: string,
     port: number,
-    timeout: number
+    timeout: number,
+    useWebSocket: boolean,
 ): Promise<Client> => {
+    const connect = useWebSocket ? connectWebsocket : connectSocket;
     const conn = await connect(host, port).catch(e => {
         lastErr = e;
         return null;
@@ -119,7 +119,7 @@ export const createClient = async (
             disconnect(new Error('socket timeout'));
         });
         conn.on('error', (e) => {
-            disconnect(e);
+            disconnect(e || new Error('Unknown error'));
         });
         conn.on('close', () => {
             disconnect(new Error('socket closed'));
@@ -130,9 +130,9 @@ export const createClient = async (
         send: (msg: SyslogMessage): Promise<void> => new Promise((rs, rj) => {
             try {
                 if (lastErr || !conn) {
-                    return rj(new Error("Not connected"));
+                    return rj(new Error('Not connected'));
                 }
-                conn.write(rfc5424Row(msg), (e?: Error) => {
+                conn.write(rfc5424Row(msg), (e: Error | null) => {
                     if (e) {
                         rj(e);
                     } else {
@@ -146,7 +146,20 @@ export const createClient = async (
     };
 };
 
-const connect = (host: string, port: number): Promise<net.Socket> => new Promise((rs, rj) => {
+interface Sock {
+    setTimeout: (ms: number, cb: () => void) => void;
+    end: () => void;
+    on: (n: string, cb: (e: Error | null, v?: any) => void) => void;
+    removeAllListeners: () => void;
+    write: (msg: string, cb: (e: Error | null) => void) => void;
+}
+
+const connectWebsocket = (host: string, port: number): Promise<Sock> => new Promise((rs, rj) => {
+
+});
+
+const connectSocket = (host: string, port: number): Promise<Sock> => new Promise((rs, rj) => {
+    const net = require('net');
     const family = net.isIPv6(host) ? 6 : 4;
     try {
         const conn = net.createConnection({ host, port, family }, () => rs(conn));

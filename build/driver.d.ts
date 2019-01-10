@@ -57,4 +57,4 @@ export interface Client {
     isConnected(): boolean;
     send(msg: SyslogMessage): Promise<void>;
 }
-export declare const createClient: (host: string, port: number, timeout: number) => Promise<Client>;
+export declare const createClient: (host: string, port: number, timeout: number, useWebSocket: boolean) => Promise<Client>;
