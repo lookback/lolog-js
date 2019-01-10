@@ -30,6 +30,7 @@ export const createSyslogger = (opts: Options): LoggerImpl => {
 
     const clientLog = async (
         severity: SyslogSeverity,
+        appName: string,
         timestamp: Date,
         message: string,
     ): Promise<void> => {
@@ -42,7 +43,7 @@ export const createSyslogger = (opts: Options): LoggerImpl => {
             timestamp,
             message,
             hostname: opts.host,
-            appName: opts.appName,
+            appName,
             pid: process.pid,
             logglyKey: opts.apiKey,
         });
@@ -61,7 +62,7 @@ export const createSyslogger = (opts: Options): LoggerImpl => {
             : prep.message;
         const timestamp = new Date(prep.timestamp);
 
-        const logit = () => clientLog(syslogSeverity, timestamp, logRow);
+        const logit = () => clientLog(syslogSeverity, prep.appName, timestamp, logRow);
 
         // log with retries
         logit().catch(e => {

@@ -138,12 +138,12 @@ export interface ClientOpts {
  */
 export const createClient = async (copts: ClientOpts): Promise<Client> => {
     const connect = copts.useWebSocket ? connectWebsocket : connectSocket;
+    // tslint:disable-next-line:no-let
+    let lastErr: Error | undefined = undefined;
     const conn = await connect(copts).catch(e => {
         lastErr = e;
         return null;
     });
-    // tslint:disable-next-line:no-let
-    let lastErr: Error | undefined = undefined;
     if (conn) {
         const disconnect = (e: Error) => {
             if (lastErr) return; // already disconnected

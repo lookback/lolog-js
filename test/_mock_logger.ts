@@ -29,8 +29,9 @@ export const createMockLogger = async () => {
         logHost: '127.0.0.1',
         logPort: port,
         host: 'testhost',
-        appName: 'test',
+        appName: 'test-app',
         apiKey: 'apikey',
+        env: 'testing',
         compliance: Compliance.Full,
         disableTls: true,
     });

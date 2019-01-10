@@ -113,9 +113,7 @@ export interface Logger {
 
 /**
  * The level of compliance with our defined log levels.
- *
-- `local1` is
-- `local2`  */
+ */
 export enum Compliance {
     /**
      * For services that fully adhere to our levels. An `ERROR` level event means waking
@@ -124,6 +122,7 @@ export enum Compliance {
      * Use syslog facility `local0`
      */
     Full = 'full',
+
     /**
      * For services that are somewhat compliant with the log levels. An `ERROR` level event
      * is not going to wake anyone up. Logs are forwarded to our log web UI.
@@ -131,6 +130,7 @@ export enum Compliance {
      * Use syslog facility `local1`
      */
     Mid = 'mid',
+
     /**
      * For services that have just been converted. Nothing is forwarded to our log web UI.
      * They are available via SSH on the log ingester.
@@ -148,35 +148,48 @@ export interface Options {
      * The syslog host.
      */
     logHost: string;
+
     /**
      * The port to send to.
      */
     logPort: number;
+
     /**
      * Host in the syslog message.
      */
     host: string;
+
     /**
      * Application name.
      */
     appName: string;
+
     /**
      * How compliant the app is with our log definition.
      */
     compliance: Compliance;
+
     /**
-     * Some secret sent as a tag to the syslog server. TODO (implement this)
+     * Some secret sent as a tag to the syslog server.
      */
     apiKey: string;
+
+    /**
+     * Environment, such as 'production', 'testing', etc
+     */
+    env: string;
+
     /**
      * Do not log to console.log()
      */
     disableConsole?: boolean;
+
     /**
      * How long to wait before disconnecting the syslog server
      * connection due to being idle. Millis.
      */
     idleTimeout?: number;
+
     /**
      * If we are to disable tls. This should only be used for unit tests.
      */
@@ -188,11 +201,8 @@ export interface Options {
  */
 export const createLogger = (opts: Options): Logger => {
     //
-    // for server side
-    const syslogger = isBrowser() ? null : createSyslogger(opts);
-
-    // for browser side
-    const logglylogger = isBrowser() ? createLogglyLogger(opts) : null;
+    // create the syslog instance
+    const syslogger = isBrowser() ? createLogglyLogger(opts) : createSyslogger(opts);
 
     // for testing we can rig the output
     const output = (opts as any).__output || console;
@@ -201,17 +211,12 @@ export const createLogger = (opts: Options): Logger => {
     const conslogger = opts.disableConsole ? null : createConsLogger(output);
 
     const doLog = (severity: Severity, args: any[]) => {
-        const prep = prepareLog(severity, args);
+        const prep = prepareLog(severity, opts.appName, args);
         if (!prep) return;
         if (!opts.disableConsole) {
             conslogger!(prep);
         }
-        if (isBrowser()) {
-            // FIXME this is temporary until we got our own syslog host.
-            logglylogger!(prep);
-        } else {
-            syslogger!(prep);
-        }
+        syslogger(prep);
     };
     return {
         trace: (...args: any[]) => doLog(Severity.Trace, args),

@@ -17,6 +17,7 @@ export enum Severity {
  */
 export interface PreparedLog {
     severity: Severity;
+    appName: string;
     timestamp: number;
     message: string;
     merged?: { [key: string]: any };
@@ -26,7 +27,11 @@ export interface PreparedLog {
 /**
  * Helper to prepare a log message, rejecting it if it's not well formed.
  */
-export const prepareLog = (severity: Severity, args: any[]): PreparedLog | undefined => {
+export const prepareLog = (
+    severity: Severity,
+    appName: string,
+    args: any[]
+): PreparedLog | undefined => {
     if (args.length == 0) {
         console.log('Ignoring empty log row');
         return;
@@ -54,6 +59,7 @@ export const prepareLog = (severity: Severity, args: any[]): PreparedLog | undef
     return {
         severity,
         timestamp,
+        appName,
         message,
         merged,
     };
