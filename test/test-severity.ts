@@ -22,7 +22,7 @@ test('send debug if enabled', async t => {
     const m = await msg;
     const pid = process.pid;
     t.is(m, `<135>1 2019-01-10T07:22:49.669Z testhost test-app ${pid}` +
-        ` - [apikey@41058] hello world\n`);
+        ` - [apikey@41058 env="testing"] hello world\n`);
 });
 
 test('not send trace even if debug is enabled', async t => {
