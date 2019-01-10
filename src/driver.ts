@@ -1,3 +1,6 @@
+import { connectWebsocket } from "./websock";
+import { connectSocket } from "./socket";
+
 /**
  * Facility numbers according to spec.
  */
@@ -48,6 +51,22 @@ export interface SyslogMessage {
 }
 
 /**
+ * Unifying minimal interface required of transport implementations.
+ */
+export interface Transport {
+    /** Make transport time out after ms idle. */
+    setTimeout: (ms: number, cb: () => void) => void;
+    /** Close the transport. */
+    end: () => void;
+    /** Add an event listener. */
+    on: (n: string, cb: (e: Error | null, v?: any) => void) => void;
+    /** Remove all registered event listeners. */
+    removeAllListeners: () => void;
+    /** Write the given string to the underlying transport. */
+    write: (msg: string, cb: (e: Error | null) => void) => void;
+}
+
+/**
  * Construct a syslog row given the message.
  */
 export const rfc5424Row = (msg: SyslogMessage): string => {
@@ -88,18 +107,35 @@ const rfc5424Structured = (msg: SyslogMessage): string => {
  * A (tcp) client connected to a syslog host.
  */
 export interface Client {
+    /**
+     * Check if client is connected.
+     */
     isConnected(): boolean;
+    /**
+     * Send message to the client. Rejects if the send fails.
+     */
     send(msg: SyslogMessage): Promise<void>;
 }
 
+/**
+ * Options for initializing a syslog client.
+ */
 export interface ClientOpts {
+    /** Syslog hostname. */
     host: string;
+    /** Syslog port. */
     port: number;
+    /** Whether to connect with websocket. */
     useWebSocket: boolean;
+    /** Whether to use TLS or not. */
     useTls: boolean;
+    /** The number of milliseconds to allow a socket to idle before disconnecting. */
     timeout: number;
 }
 
+/**
+ * Create a syslog client from the given options.
+ */
 export const createClient = async (copts: ClientOpts): Promise<Client> => {
     const connect = copts.useWebSocket ? connectWebsocket : connectSocket;
     const conn = await connect(copts).catch(e => {
@@ -149,34 +185,3 @@ export const createClient = async (copts: ClientOpts): Promise<Client> => {
     };
 };
 
-interface Sock {
-    setTimeout: (ms: number, cb: () => void) => void;
-    end: () => void;
-    on: (n: string, cb: (e: Error | null, v?: any) => void) => void;
-    removeAllListeners: () => void;
-    write: (msg: string, cb: (e: Error | null) => void) => void;
-}
-
-const connectWebsocket = (copts: ClientOpts): Promise<Sock> => new Promise((rs, rj) => {
-
-});
-
-const connectSocket = (copts: ClientOpts): Promise<Sock> => new Promise((rs, rj) => {
-    const net = require('net');
-    const tls = require('tls');
-    const family = net.isIPv6(copts.host) ? 6 : 4;
-    try {
-        const o = {
-            host: copts.host,
-            port: copts.port,
-            family,
-        };
-        if (copts.useTls) {
-            const conn = tls.connect(o, () => rs(conn));
-        } else {
-            const conn = net.createConnection(o, () => rs(conn));
-        }
-    } catch (e) {
-        rj(e);
-    }
-});
