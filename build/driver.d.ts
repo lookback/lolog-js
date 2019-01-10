@@ -47,6 +47,21 @@ export interface SyslogMessage {
     };
 }
 /**
+ * Unifying minimal interface required of transport implementations.
+ */
+export interface Transport {
+    /** Make transport time out after ms idle. */
+    setTimeout: (ms: number, cb: () => void) => void;
+    /** Close the transport. */
+    end: () => void;
+    /** Add an event listener. */
+    on: (n: string, cb: (e: Error | null, v?: any) => void) => void;
+    /** Remove all registered event listeners. */
+    removeAllListeners: () => void;
+    /** Write the given string to the underlying transport. */
+    write: (msg: string, cb: (e: Error | null) => void) => void;
+}
+/**
  * Construct a syslog row given the message.
  */
 export declare const rfc5424Row: (msg: SyslogMessage) => string;
@@ -54,7 +69,31 @@ export declare const rfc5424Row: (msg: SyslogMessage) => string;
  * A (tcp) client connected to a syslog host.
  */
 export interface Client {
+    /**
+     * Check if client is connected.
+     */
     isConnected(): boolean;
+    /**
+     * Send message to the client. Rejects if the send fails.
+     */
     send(msg: SyslogMessage): Promise<void>;
 }
-export declare const createClient: (host: string, port: number, timeout: number, useWebSocket: boolean) => Promise<Client>;
+/**
+ * Options for initializing a syslog client.
+ */
+export interface ClientOpts {
+    /** Syslog hostname. */
+    host: string;
+    /** Syslog port. */
+    port: number;
+    /** Whether to connect with websocket. */
+    useWebSocket: boolean;
+    /** Whether to use TLS or not. */
+    useTls: boolean;
+    /** The number of milliseconds to allow a socket to idle before disconnecting. */
+    timeout: number;
+}
+/**
+ * Create a syslog client from the given options.
+ */
+export declare const createClient: (copts: ClientOpts) => Promise<Client>;
