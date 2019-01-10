@@ -121,21 +121,21 @@ export enum Compliance {
      *
      * Use syslog facility `local0`
      */
-    Full,
+    Full = 'full',
     /**
      * For services that are somewhat compliant with the log levels. An `ERROR` level event
      * is not going to wake anyone up. Logs are forwarded to our log web UI.
      *
      * Use syslog facility `local1`
      */
-    Mid,
+    Mid = 'mid',
     /**
      * For services that have just been converted. Nothing is forwarded to our log web UI.
      * They are available via SSH on the log ingester.
      *
      * Use syslog facility `local2`
      */
-    None,
+    None = 'none',
 }
 
 /**
