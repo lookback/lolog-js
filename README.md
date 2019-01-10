@@ -6,13 +6,14 @@ This is a logging package that follows our [logging architecture](https://www.no
 ## Usage
 
 ```javascript
-const log = createLogger({
-    logHost: 'logingester.lookback.io',
+const log = lolog.createLogger({
+    logHost: 'syslogger.lookback.io',
     logPort: 12345,
     host: 'browser',
-    appName: 'live-player',
-    compliance: 'full',
-    apiKey: 'somethingsupersecret',
+    appName: 'site-liveplayer',
+    apiKey: '<redacted>',
+    env: 'testing',
+    compliance: lolog.Compliance.Full,
 });
 
 // simple message
