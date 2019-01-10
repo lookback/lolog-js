@@ -1,4 +1,4 @@
-module.exports = (function (window, document) {
+module.exports = () => (function (window, document) {
     var LOGGLY_INPUT_PREFIX = 'http' + (('https:' === document.location.protocol ? 's' : '')) + '://',
         LOGGLY_COLLECTOR_DOMAIN = 'logs-01.loggly.com',
         LOGGLY_SESSION_KEY = 'logglytrackingsession',

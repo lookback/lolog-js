@@ -73,9 +73,7 @@ export interface Logger {
 }
 /**
  * The level of compliance with our defined log levels.
- *
-- `local1` is
-- `local2`  */
+ */
 export declare enum Compliance {
     /**
      * For services that fully adhere to our levels. An `ERROR` level event means waking
@@ -124,9 +122,13 @@ export interface Options {
      */
     compliance: Compliance;
     /**
-     * Some secret sent as a tag to the syslog server. TODO (implement this)
+     * Some secret sent as a tag to the syslog server.
      */
     apiKey: string;
+    /**
+     * Environment, such as 'production', 'testing', etc
+     */
+    env: string;
     /**
      * Do not log to console.log()
      */

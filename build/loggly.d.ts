@@ -3,7 +3,7 @@ import { LoggerImpl } from "./syslog";
 export interface LogglyTracker {
     push: {
         (message: string): void;
-        (message: string, json: {
+        (data: {
             [key: string]: any;
         }): void;
     };
