@@ -35,7 +35,7 @@ export interface WellKnown {
 /**
  * Check if the given argument is a `LogWellKnown`. Every single field must be well known.
  */
-export declare const isWellKnown: (t: any, reject?: ((msg: string) => void) | undefined) => t is WellKnown;
+export declare const isWellKnown: (t: any, reject?: (msg: string) => void) => t is WellKnown;
 /**
  * Logging instance.
  */
@@ -71,7 +71,7 @@ export interface Logger {
      */
     error: LogFunction;
     /**
-     * Create a sublogger that will be namespaced under this logger.
+     * Create a sublogger that will be namespaced under this logger. Limited to `/[a-z0-9-]+/`.
      */
     sublogger: (subname: string) => Logger;
     /**
@@ -126,7 +126,7 @@ export interface Options {
      */
     host: string;
     /**
-     * Application name.
+     * Application name. Limited to `/[a-z0-9-]+/`.
      */
     appName: string;
     /**
@@ -155,6 +155,7 @@ export interface Options {
      */
     disableTls?: boolean;
 }
+export declare const isOptions: (t: any, reject?: (msg: string) => void) => t is Options;
 /**
  * Create a logger from the options.
  */
