@@ -3,15 +3,20 @@
   "version": "1.0.0",
   "description": "Lookback Log",
   "main": "build/index.js",
+  "types": "build/index.d.ts",
   "author": "Martin Algesten",
   "private": true,
   "scripts": {
     "test": "npm run lint",
-    "build": "tsc",
+    "build": "tsc && browserify ./build/index.js > ./lolog.js",
     "watch": "tsc -w",
     "lint": "tslint --project ."
   },
+  "dependencies": {
+    "syslog-client": "^1.1.1"
+  },
   "devDependencies": {
+    "@types/node": "^10.12.18",
     "browserify": "^16.2.3",
     "tslint": "^5",
     "tslint-immutable": "^4.7",

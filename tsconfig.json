@@ -20,7 +20,10 @@
 		"noImplicitThis": true,
 		"noUnusedLocals": true,
 		"strictNullChecks": true,
-		"noStrictGenericChecks": true
+		"noStrictGenericChecks": true,
+		"types": [
+			"node"
+		]
 	},
 	"include": [
 		"./src/**/*.ts"
