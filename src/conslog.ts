@@ -1,22 +1,34 @@
 import { PreparedLog, Severity } from "./prepare";
 
-export const consLogger = (prep: PreparedLog) => {
+export interface Output {
+    debug(message?: any, ...optionalParams: any[]): void;
+    log(message?: any, ...optionalParams: any[]): void;
+    warn(message?: any, ...optionalParams: any[]): void;
+    error(message?: any, ...optionalParams: any[]): void;
+}
+
+export const consLogger = (prep: PreparedLog, output: Output) => {
     const { severity, message, merged } = prep;
+    const fn = selectFn(output, severity);
+    const time = new Date(prep.timestamp);
+    if (merged) {
+        fn.call(output, time, prep.severity, message, merged);
+    } else {
+        fn.call(output, time, prep.severity, message);
+    }
+};
+
+const selectFn = (output: Output, severity: Severity) => {
     switch (severity) {
         case Severity.Trace:
-            console.debug(Severity.Trace, message, merged);
-            break;
+            return output.debug;
         case Severity.Debug:
-            console.debug(Severity.Debug, message, merged);
-            break;
+            return output.debug;
         case Severity.Info:
-            console.log(Severity.Info, message, merged);
-            break;
+            return output.log;
         case Severity.Warn:
-            console.warn(Severity.Warn, message, merged);
-            break;
+            return output.warn;
         case Severity.Error:
-            console.error(Severity.Error, message, merged);
-            break;
+            return output.error;
     }
 };

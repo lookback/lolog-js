@@ -7,7 +7,8 @@
   "author": "Martin Algesten",
   "private": true,
   "scripts": {
-    "test": "npm run lint",
+    "test": "npm run lint && ava --verbose",
+    "test-watch": "ava --watch",
     "build": "tsc && browserify ./build/index.js > ./lolog.js",
     "watch": "tsc -w",
     "lint": "tslint --project ."
@@ -17,9 +18,20 @@
   },
   "devDependencies": {
     "@types/node": "^10.12.18",
+    "ava": "^1.0.1",
     "browserify": "^16.2.3",
+    "ts-node": "^7.0.1",
     "tslint": "^5",
     "tslint-immutable": "^4.7",
     "typescript": "^3.1.6"
+  },
+  "ava": {
+    "compileEnhancements": false,
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
   }
 }

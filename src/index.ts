@@ -23,13 +23,26 @@ export type Data = { [key: string]: any };
  * Fields we together have decided the name of and are indexed for searching.
  */
 export interface WellKnown {
+    /**
+     * Set log message timestamp with this. Millis since 1970.
+     */
+    timestamp: number;
+    /**
+     * Recording id.
+     */
     recordingId?: string;
+    /**
+     * User id.
+     */
     userId?: string;
-    // some process to add more
+    //
+    // consult process to add more fields here.
+    //
 }
 
 // keep in sync with interface definition
 const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
+    timestamp: 'number',
     recordingId: 'string',
     userId: 'string',
 };
@@ -38,18 +51,18 @@ const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
  * Check if the given argument is a `LogWellKnown`. Every single field must be well known.
  */
 export const isWellKnown = (t: any, reject?: (msg: string) => void): t is WellKnown => {
-    if (!!t) {
+    if (!t) {
         reject && reject(`"${t}" is not a value`);
         return false;
     }
-    for (const f in Object.keys(t)) {
+    for (const f of Object.keys(t)) {
         const type = WellKnown[f];
         if (!type) {
-            reject && reject(`${t} is not a well known field`);
+            reject && reject(`${f} is not a well known field`);
             return false;
         }
-        if (typeof t !== type) {
-            reject && reject(`${t} is not a ${type}`);
+        if ((typeof t[f]) !== type) {
+            reject && reject(`${f} is not a ${type}`);
             return false;
         }
     }
@@ -132,11 +145,15 @@ export interface Options {
     /**
      * The syslog host.
      */
-    host: string;
+    logHost: string;
     /**
      * The port to send to.
      */
-    port: number;
+    logPort: number;
+    /**
+     * Host in the syslog message.
+     */
+    host: string;
     /**
      * Application name.
      */
@@ -148,7 +165,7 @@ export interface Options {
     /**
      * Do not log to console.log()
      */
-    disableConsole: boolean;
+    disableConsole?: boolean;
 }
 
 /**
@@ -160,7 +177,9 @@ export const createLogger = (opts: Options): Logger => {
         const prep = prepareLog(severity, args);
         if (!prep) return;
         if (!opts.disableConsole) {
-            consLogger(prep);
+            // for testing we can rig the output
+            const output = (opts as any).__output || console;
+            consLogger(prep, output);
         }
         syslogger(prep);
     };

@@ -7,8 +7,8 @@ const wait = (ms: number) => new Promise(rs => setTimeout(rs, ms));
 
 export const createSyslogger = (opts: Options) => {
     const sopts = {
+        port: opts.logPort,
         syslogHostname: opts.host,
-        port: opts.port,
         transport: syslog.Transport.Tcp,
         facility: selectFacility(opts.compliance),
         rfc3164: false,
@@ -30,7 +30,7 @@ export const createSyslogger = (opts: Options) => {
 
     // connect the client.
     const connectClient = () => {
-        client = syslog.createClient(sopts);
+        client = syslog.createClient(opts.logHost, sopts);
         client.once('close', disconnectClient);
         client.once('error', disconnectClient);
     };
@@ -57,11 +57,13 @@ export const createSyslogger = (opts: Options) => {
         const syslogSeverity = selectSeverity(prep.severity);
 
         // might be null for TRACE.
-        if (!!syslogSeverity) return;
+        if (!syslogSeverity) return;
 
         // the row with the data to log
-        const logRow = `${prep.message} ${JSON.stringify(prep.merged)}`;
-        const timestamp = new Date();
+        const logRow = prep.merged
+            ? `${prep.message} ${JSON.stringify(prep.merged)}`
+            : prep.message;
+        const timestamp = new Date(prep.timestamp);
 
         const logit = () => clientLog(syslogSeverity, logRow, timestamp);
 
