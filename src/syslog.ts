@@ -53,9 +53,6 @@ export const createSyslogger = (opts: Options): LoggerImpl => {
         // the severity will be mapped to some syslog severity.
         const syslogSeverity = selectSeverity(prep.severity);
 
-        // might be null for TRACE.
-        if (!syslogSeverity) return;
-
         // the row with the data to log
         const logRow = prep.merged
             ? `${prep.message} ${JSON.stringify(prep.merged)}`
@@ -84,14 +81,12 @@ const selectFacility = (c: Compliance): Facility => {
     }
 };
 
-const selectSeverity = (s: Severity): SyslogSeverity | null => {
+const selectSeverity = (s: Severity): SyslogSeverity => {
     switch (s) {
-        case Severity.Trace: return null; // we don't map TRACE to syslog server
+        case Severity.Trace: return SyslogSeverity.Debug;
         case Severity.Debug: return SyslogSeverity.Debug;
         case Severity.Info: return SyslogSeverity.Informational;
         case Severity.Warn: return SyslogSeverity.Warning;
         case Severity.Error: return SyslogSeverity.Error;
     }
 };
-
-

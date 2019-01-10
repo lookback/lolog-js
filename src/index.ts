@@ -114,6 +114,15 @@ export interface Logger {
      * Create a sublogger that will be namespaced under this logger.
      */
     sublogger: (subname: string) => Logger;
+
+    /**
+     * Enable sending debug level logs to the log host for this logger. The default
+     * is to only send INFO level and above. DEBUG can be enabled while finding an error.
+     * TRACE is only ever logged to console.
+     *
+     * Notice that this only toggles the current logger, not any subloggers.
+     */
+    setDebug: (debug: boolean) => void;
 }
 
 /**
@@ -216,13 +225,17 @@ export const createLogger = (opts: Options): Logger => {
     const conslogger = opts.disableConsole ? null : createConsLogger(output);
 
     const relativeLogger = (namespace: string) => {
+        // tslint:disable-next-line:no-let
+        let sendDebug = false;
         const doLog = (severity: Severity, args: any[]) => {
             const prep = prepareLog(severity, namespace, args);
             if (!prep) return;
             if (!opts.disableConsole) {
                 conslogger!(prep);
             }
-            syslogger(prep);
+            if (prep.severity != Severity.Trace && (prep.severity != Severity.Debug || sendDebug)) {
+                syslogger(prep);
+            }
         };
         return {
             trace: (...args: any[]) => doLog(Severity.Trace, args),
@@ -231,6 +244,9 @@ export const createLogger = (opts: Options): Logger => {
             warn: (...args: any[]) => doLog(Severity.Warn, args),
             error: (...args: any[]) => doLog(Severity.Error, args),
             sublogger: (sub: string) => relativeLogger(`${namespace}-${sub}`),
+            setDebug: (debug: boolean) => {
+                sendDebug = debug;
+            },
         };
     };
 
