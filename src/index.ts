@@ -109,6 +109,11 @@ export interface Logger {
      * anyone, not just the developer can understand the problem.
      */
     error: LogFunction;
+
+    /**
+     * Create a sublogger that will be namespaced under this logger.
+     */
+    sublogger: (subname: string) => Logger;
 }
 
 /**
@@ -210,20 +215,25 @@ export const createLogger = (opts: Options): Logger => {
     // to console
     const conslogger = opts.disableConsole ? null : createConsLogger(output);
 
-    const doLog = (severity: Severity, args: any[]) => {
-        const prep = prepareLog(severity, opts.appName, args);
-        if (!prep) return;
-        if (!opts.disableConsole) {
-            conslogger!(prep);
-        }
-        syslogger(prep);
+    const relativeLogger = (namespace: string) => {
+        const doLog = (severity: Severity, args: any[]) => {
+            const prep = prepareLog(severity, namespace, args);
+            if (!prep) return;
+            if (!opts.disableConsole) {
+                conslogger!(prep);
+            }
+            syslogger(prep);
+        };
+        return {
+            trace: (...args: any[]) => doLog(Severity.Trace, args),
+            debug: (...args: any[]) => doLog(Severity.Debug, args),
+            info: (...args: any[]) => doLog(Severity.Info, args),
+            warn: (...args: any[]) => doLog(Severity.Warn, args),
+            error: (...args: any[]) => doLog(Severity.Error, args),
+            sublogger: (sub: string) => relativeLogger(`${namespace}-${sub}`),
+        };
     };
-    return {
-        trace: (...args: any[]) => doLog(Severity.Trace, args),
-        debug: (...args: any[]) => doLog(Severity.Debug, args),
-        info: (...args: any[]) => doLog(Severity.Info, args),
-        warn: (...args: any[]) => doLog(Severity.Warn, args),
-        error: (...args: any[]) => doLog(Severity.Error, args),
-    };
+
+    return relativeLogger(opts.appName);
 };
 
