@@ -70,6 +70,18 @@ export interface Logger {
      * anyone, not just the developer can understand the problem.
      */
     error: LogFunction;
+    /**
+     * Create a sublogger that will be namespaced under this logger.
+     */
+    sublogger: (subname: string) => Logger;
+    /**
+     * Enable sending debug level logs to the log host for this logger. The default
+     * is to only send INFO level and above. DEBUG can be enabled while finding an error.
+     * TRACE is only ever logged to console.
+     *
+     * Notice that this only toggles the current logger, not any subloggers.
+     */
+    setDebug: (debug: boolean) => void;
 }
 /**
  * The level of compliance with our defined log levels.
