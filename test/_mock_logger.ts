@@ -30,7 +30,7 @@ export const createMockLogger = async () => {
         logPort: port,
         host: 'testhost',
         appName: 'test',
-        apiKey: 'secret things',
+        apiKey: 'apikey',
         compliance: Compliance.Full,
     });
     return { msg, log };

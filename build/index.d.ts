@@ -19,7 +19,17 @@ export declare type Data = {
  * Fields we together have decided the name of and are indexed for searching.
  */
 export interface WellKnown {
+    /**
+     * Set log message timestamp with this. Millis since 1970.
+     */
+    timestamp: number;
+    /**
+     * Recording id.
+     */
     recordingId?: string;
+    /**
+     * User id.
+     */
     userId?: string;
 }
 /**
@@ -73,21 +83,21 @@ export declare enum Compliance {
      *
      * Use syslog facility `local0`
      */
-    Full = 0,
+    Full = "full",
     /**
      * For services that are somewhat compliant with the log levels. An `ERROR` level event
      * is not going to wake anyone up. Logs are forwarded to our log web UI.
      *
      * Use syslog facility `local1`
      */
-    Mid = 1,
+    Mid = "mid",
     /**
      * For services that have just been converted. Nothing is forwarded to our log web UI.
      * They are available via SSH on the log ingester.
      *
      * Use syslog facility `local2`
      */
-    None = 2
+    None = "none"
 }
 /**
  * Options for initializing the logging.
@@ -96,11 +106,15 @@ export interface Options {
     /**
      * The syslog host.
      */
-    host: string;
+    logHost: string;
     /**
      * The port to send to.
      */
-    port: number;
+    logPort: number;
+    /**
+     * Host in the syslog message.
+     */
+    host: string;
     /**
      * Application name.
      */
@@ -110,9 +124,18 @@ export interface Options {
      */
     compliance: Compliance;
     /**
+     * Some secret sent as a tag to the syslog server. TODO (implement this)
+     */
+    apiKey: string;
+    /**
      * Do not log to console.log()
      */
-    disableConsole: boolean;
+    disableConsole?: boolean;
+    /**
+     * How long to wait before disconnecting the syslog server
+     * connection due to being idle. Millis.
+     */
+    idleTimeout?: number;
 }
 /**
  * Create a logger from the options.

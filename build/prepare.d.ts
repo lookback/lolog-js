@@ -13,8 +13,9 @@ export declare enum Severity {
  */
 export interface PreparedLog {
     severity: Severity;
+    timestamp: number;
     message: string;
-    merged: {
+    merged?: {
         [key: string]: any;
     };
 }

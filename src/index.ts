@@ -170,6 +170,11 @@ export interface Options {
      * Do not log to console.log()
      */
     disableConsole?: boolean;
+    /**
+     * How long to wait before disconnecting the syslog server
+     * connection due to being idle. Millis.
+     */
+    idleTimeout?: number;
 }
 
 /**

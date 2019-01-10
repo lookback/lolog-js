@@ -1,56 +1,42 @@
 import { Options, Compliance } from ".";
 import { PreparedLog, Severity } from "./prepare";
-
-const syslog = require("syslog-client");
+import { createClient, Client, Facility, SyslogSeverity } from "./driver";
 
 const wait = (ms: number) => new Promise(rs => setTimeout(rs, ms));
 
 export const createSyslogger = (opts: Options) => {
-    const sopts = {
-        port: opts.logPort,
-        syslogHostname: opts.host,
-        transport: syslog.Transport.Tcp,
-        facility: selectFacility(opts.compliance),
-        rfc3164: false,
-        appName: opts.appName,
-    };
-
     // Holds the client when it is connected. When we detect a disconnect or
     // error, we remove the instance and reconnect on next log line.
     // tslint:disable-next-line:no-let
-    let client: any = null;
+    let client: Client | null = null;
 
-    // disconnect the client and null the field
-    const disconnectClient = () => {
-        if (!client) return;
-        client.removeAllListeners();
-        client.close();
-        client = null;
-    };
+    const facility = selectFacility(opts.compliance);
+    const idleTimeout = opts.idleTimeout || 10_000;
 
     // connect the client.
-    const connectClient = () => {
-        client = syslog.createClient(opts.logHost, sopts);
-        client.once('close', disconnectClient);
-        client.once('error', disconnectClient);
+    const connectClient = async () => {
+        client = await createClient(opts.logHost, opts.logPort, idleTimeout);
     };
 
-    const clientLog = (
-        severity: any,
+    const clientLog = async (
+        severity: SyslogSeverity,
+        timestamp: Date,
         message: string,
-        timestamp: Date
-    ): Promise<void> => new Promise((rs, rj) => {
-        if (!client) {
-            connectClient();
+    ): Promise<void> => {
+        if (!client || !client.isConnected()) {
+            await connectClient();
         }
-        client.log(message, { severity, timestamp }, (err: Error) => {
-            if (err) {
-                rj(err);
-            } else {
-                rs();
-            }
+        await client!.send({
+            facility,
+            severity,
+            timestamp,
+            message,
+            hostname: opts.host,
+            appName: opts.appName,
+            pid: process.pid,
+            logglyKey: opts.apiKey,
         });
-    });
+    };
 
     return (prep: PreparedLog) => {
         // the severity will be mapped to some syslog severity.
@@ -65,7 +51,7 @@ export const createSyslogger = (opts: Options) => {
             : prep.message;
         const timestamp = new Date(prep.timestamp);
 
-        const logit = () => clientLog(syslogSeverity, logRow, timestamp);
+        const logit = () => clientLog(syslogSeverity, timestamp, logRow);
 
         // log with retries
         logit().catch(e => {
@@ -79,20 +65,22 @@ export const createSyslogger = (opts: Options) => {
     };
 };
 
-const selectFacility = (c: Compliance): any => {
+const selectFacility = (c: Compliance): Facility => {
     switch (c) {
-        case Compliance.Full: return syslog.Facility.Local0;
-        case Compliance.Mid: return syslog.Facility.Local1;
-        case Compliance.None: return syslog.Facility.Local2;
+        case Compliance.Full: return Facility.Local0;
+        case Compliance.Mid: return Facility.Local1;
+        case Compliance.None: return Facility.Local2;
     }
 };
 
-const selectSeverity = (s: Severity): any => {
+const selectSeverity = (s: Severity): SyslogSeverity | null => {
     switch (s) {
         case Severity.Trace: return null; // we don't map TRACE to syslog server
-        case Severity.Debug: return syslog.Severity.Debug;
-        case Severity.Info: return syslog.Severity.Informational;
-        case Severity.Warn: return syslog.Severity.Warning;
-        case Severity.Error: return syslog.Severity.Error;
+        case Severity.Debug: return SyslogSeverity.Debug;
+        case Severity.Info: return SyslogSeverity.Informational;
+        case Severity.Warn: return SyslogSeverity.Warning;
+        case Severity.Error: return SyslogSeverity.Error;
     }
 };
+
+

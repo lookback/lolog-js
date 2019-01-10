@@ -13,9 +13,7 @@
     "watch": "tsc -w",
     "lint": "tslint --project ."
   },
-  "dependencies": {
-    "syslog-client": "^1.1.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/node": "^10.12.18",
     "ava": "^1.0.1",
