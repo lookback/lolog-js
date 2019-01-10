@@ -1,0 +1,20 @@
+{
+  "name": "lolog",
+  "version": "1.0.0",
+  "description": "Lookback Log",
+  "main": "build/index.js",
+  "author": "Martin Algesten",
+  "private": true,
+  "scripts": {
+    "test": "npm run lint",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "tslint --project ."
+  },
+  "devDependencies": {
+    "browserify": "^16.2.3",
+    "tslint": "^5",
+    "tslint-immutable": "^4.7",
+    "typescript": "^3.1.6"
+  }
+}
