@@ -9,7 +9,7 @@
   "scripts": {
     "test": "npm run lint && ava --verbose",
     "test-watch": "ava --watch",
-    "build": "tsc && browserify ./build/index.js > ./lolog.js",
+    "build": "tsc && cp ./src/*.js ./build/ && browserify ./build/index.js > ./lolog.js",
     "watch": "tsc -w",
     "lint": "tslint --project ."
   },

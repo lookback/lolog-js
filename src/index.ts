@@ -1,6 +1,8 @@
 import { createSyslogger } from "./syslog";
-import { consLogger } from "./conslog";
+import { createConsLogger } from "./conslog";
 import { Severity, prepareLog } from "./prepare";
+import { isBrowser } from "./is-browser";
+import { createLogglyLogger } from "./loggly";
 
 /**
  * The overloaded variants of logging.
@@ -185,16 +187,31 @@ export interface Options {
  * Create a logger from the options.
  */
 export const createLogger = (opts: Options): Logger => {
-    const syslogger = createSyslogger(opts);
+    //
+    // for server side
+    const syslogger = isBrowser() ? null : createSyslogger(opts);
+
+    // for browser side
+    const logglylogger = isBrowser() ? createLogglyLogger(opts) : null;
+
+    // for testing we can rig the output
+    const output = (opts as any).__output || console;
+
+    // to console
+    const conslogger = opts.disableConsole ? null : createConsLogger(output);
+
     const doLog = (severity: Severity, args: any[]) => {
         const prep = prepareLog(severity, args);
         if (!prep) return;
         if (!opts.disableConsole) {
-            // for testing we can rig the output
-            const output = (opts as any).__output || console;
-            consLogger(prep, output);
+            conslogger!(prep);
         }
-        syslogger(prep);
+        if (isBrowser()) {
+            // FIXME this is temporary until we got our own syslog host.
+            logglylogger!(prep);
+        } else {
+            syslogger!(prep);
+        }
     };
     return {
         trace: (...args: any[]) => doLog(Severity.Trace, args),

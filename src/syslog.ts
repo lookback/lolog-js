@@ -1,13 +1,13 @@
 import { Options, Compliance } from ".";
 import { PreparedLog, Severity } from "./prepare";
 import { createClient, Client, Facility, SyslogSeverity } from "./driver";
+import { isBrowser } from "./is-browser";
 
 const wait = (ms: number) => new Promise(rs => setTimeout(rs, ms));
 
-const isBrowser =
-    new Function("(function(){return typeof window !== 'undefined' && this===window})();");
+export type LoggerImpl = (prep: PreparedLog) => void;
 
-export const createSyslogger = (opts: Options) => {
+export const createSyslogger = (opts: Options): LoggerImpl => {
     // Holds the client when it is connected. When we detect a disconnect or
     // error, we remove the instance and reconnect on next log line.
     // tslint:disable-next-line:no-let
@@ -18,7 +18,7 @@ export const createSyslogger = (opts: Options) => {
 
     // connect the client.
     const connectClient = async () => {
-        const useWebSocket = !!isBrowser();
+        const useWebSocket = isBrowser();
         client = await createClient({
             host: opts.logHost,
             port: opts.logPort,

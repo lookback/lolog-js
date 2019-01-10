@@ -1,4 +1,5 @@
 import { PreparedLog, Severity } from "./prepare";
+import { LoggerImpl } from "./syslog";
 
 export interface Output {
     debug(message?: any, ...optionalParams: any[]): void;
@@ -7,7 +8,7 @@ export interface Output {
     error(message?: any, ...optionalParams: any[]): void;
 }
 
-export const consLogger = (prep: PreparedLog, output: Output) => {
+export const createConsLogger = (output: Output): LoggerImpl => (prep: PreparedLog) => {
     const { severity, message, merged } = prep;
     const fn = selectFn(output, severity);
     const time = new Date(prep.timestamp);
