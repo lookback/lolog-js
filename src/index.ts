@@ -163,6 +163,10 @@ export interface Options {
      */
     compliance: Compliance;
     /**
+     * Some secret sent as a tag to the syslog server. TODO (implement this)
+     */
+    apiKey: string;
+    /**
      * Do not log to console.log()
      */
     disableConsole?: boolean;

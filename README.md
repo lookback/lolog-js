@@ -12,6 +12,7 @@ const log = createLogger({
     host: 'browser',
     appName: 'live-player',
     compliance: 'full',
+    apiKey: 'somethingsupersecret',
 });
 
 // simple message
