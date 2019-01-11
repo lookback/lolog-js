@@ -2,9 +2,9 @@
 declare const window: any;
 
 // and a sneaky helper to get "this"
-const __this = Function("return this");
+const getThis = require('./is-browser-get-this');
 
 /**
  * Check if this is a browser. `window` must be defined and be `this`.
  */
-export const isBrowser = (): boolean => typeof window !== 'undefined' && __this() == window;
+export const isBrowser = (): boolean => typeof window !== 'undefined' && getThis() == window;
