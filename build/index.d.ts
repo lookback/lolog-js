@@ -22,7 +22,7 @@ export interface WellKnown {
     /**
      * Set log message timestamp with this. Millis since 1970.
      */
-    timestamp: number;
+    timestamp?: number;
     /**
      * Recording id.
      */
