@@ -1,7 +1,7 @@
 import { Options, Compliance } from ".";
 import { PreparedLog, Severity } from "./prepare";
 import { createClient, Client, Facility, SyslogSeverity } from "./driver";
-import { isBrowser } from "./is-browser";
+import * as isBrowser from "is-browser";
 
 const wait = (ms: number) => new Promise(rs => setTimeout(rs, ms));
 
@@ -18,7 +18,7 @@ export const createSyslogger = (opts: Options): LoggerImpl => {
 
     // connect the client.
     const connectClient = async () => {
-        const useWebSocket = isBrowser();
+        const useWebSocket = isBrowser;
         client = await createClient({
             host: opts.logHost,
             port: opts.logPort,

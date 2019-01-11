@@ -1,7 +1,7 @@
 import { createSyslogger } from "./syslog";
 import { createConsLogger } from "./conslog";
 import { Severity, prepareLog } from "./prepare";
-import { isBrowser } from "./is-browser";
+import * as isBrowser from "is-browser";
 import { createLogglyLogger } from "./loggly";
 import { mkValidator } from "./validator";
 
@@ -227,7 +227,7 @@ export const createLogger = (opts: Options): Logger => {
 
     //
     // create the syslog instance
-    const syslogger = isBrowser() ? createLogglyLogger(opts) : createSyslogger(opts);
+    const syslogger = isBrowser ? createLogglyLogger(opts) : createSyslogger(opts);
 
     // for testing we can rig the output
     const output = (opts as any).__output || console;
