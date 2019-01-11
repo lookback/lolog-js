@@ -11,11 +11,10 @@ export interface Output {
 export const createConsLogger = (output: Output): LoggerImpl => (prep: PreparedLog) => {
     const { severity, message, merged } = prep;
     const fn = selectFn(output, severity);
-    const time = new Date(prep.timestamp);
     if (merged) {
-        fn.call(output, time, prep.severity, message, merged);
+        fn.call(output, prep.severity, message, merged);
     } else {
-        fn.call(output, time, prep.severity, message);
+        fn.call(output, prep.severity, message);
     }
 };
 
