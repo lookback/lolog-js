@@ -8,7 +8,7 @@ import { mkValidator } from "./validator";
 /**
  * The overloaded variants of logging.
  */
-type LogFunction = {
+export type LogFunction = {
     /** Log just one message. */
     (message: string): void;
     /** Log a message and some well known, indexed fields. */
