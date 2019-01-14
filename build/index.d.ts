@@ -1,7 +1,7 @@
 /**
  * The overloaded variants of logging.
  */
-declare type LogFunction = {
+export declare type LogFunction = {
     /** Log just one message. */
     (message: string): void;
     /** Log a message and some well known, indexed fields. */
@@ -160,4 +160,3 @@ export declare const isOptions: (t: any, reject?: (msg: string) => void) => t is
  * Create a logger from the options.
  */
 export declare const createLogger: (opts: Options) => Logger;
-export {};
