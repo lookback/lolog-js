@@ -1,4 +1,4 @@
-import { createSyslogger } from "./syslog";
+import { createSyslogger, LoggerImpl } from "./syslog";
 import { createConsLogger } from "./conslog";
 import { Severity, prepareLog } from "./prepare";
 import * as isBrowser from "is-browser";
@@ -222,36 +222,25 @@ export const isOptions: (t: any, reject?: (msg: string) => void) => t is Options
 /** Helper to remove unwanted chars from namespaces */
 const filterNs = (sub: string) => sub.toLowerCase().replace(/[^a-z0-9-]/g, '');
 
-/**
- * Create a logger from the options.
- */
-export const createLogger = (opts: Options): Logger => {
-
-    isOptions(opts, (msg) => {
-        throw new Error(`Invalid options: ${msg}`);
-    });
-
-    //
-    // create the syslog instance
-    const syslogger = isBrowser ? createLogglyLogger(opts) : createSyslogger(opts);
-
-    // for testing we can rig the output
-    const output = (opts as any).__output || console;
-
-    // to console
-    const conslogger = opts.disableConsole ? null : createConsLogger(output);
-
-    // create a logger for a namespace
+// create a logger for a namespace
+const mkNnsLogger = (
+    syslogger: LoggerImpl | null,
+    conslogger: LoggerImpl | null,
+) => {
     const nsLogger = (namespace: string) => {
         // tslint:disable-next-line:no-let
         let sendDebug = false;
         const doLog = (severity: Severity, args: any[]) => {
             const prep = prepareLog(severity, namespace, args);
             if (!prep) return;
-            if (!opts.disableConsole) {
+            if (conslogger) {
                 conslogger!(prep);
             }
-            if (prep.severity != Severity.Trace && (prep.severity != Severity.Debug || sendDebug)) {
+            if (syslogger != null &&
+                // never syslog TRACE
+                prep.severity != Severity.Trace &&
+                // only syslog DEBUG if sendDebug flag
+                (prep.severity != Severity.Debug || sendDebug)) {
                 syslogger(prep);
             }
         };
@@ -267,23 +256,50 @@ export const createLogger = (opts: Options): Logger => {
             },
         };
     };
+    return nsLogger;
+};
+
+/**
+ * Create a logger from the options.
+ */
+export const createLogger = (opts: Options): Logger => {
+
+    isOptions(opts, (msg) => {
+        throw new Error(`Invalid options: ${msg}`);
+    });
+
+    // create the syslog instance
+    const syslogger = isBrowser ? createLogglyLogger(opts) : createSyslogger(opts);
+
+    // for testing we can rig the output
+    const output = (opts as any).__output || console;
+
+    // to console
+    const conslogger = opts.disableConsole ? null : createConsLogger(output);
+
+    // the name spaced logger
+    const nsLogger = mkNnsLogger(syslogger, conslogger);
 
     return nsLogger(filterNs(opts.appName));
 };
 
 
 /**
- * Create a logger that does nothing.
+ * Create a logger that doesn't log to syslog. It does however log to console.
  */
-export const createVoidLogger = (): Logger => ({
-    trace: (...args: any[]) => { },
-    debug: (...args: any[]) => { },
-    info: (...args: any[]) => { },
-    warn: (...args: any[]) => { },
-    error: (...args: any[]) => { },
-    sublogger: (sub: string) => createVoidLogger(),
-    setDebug: (debug: boolean) => { },
-});
+export const createVoidLogger = (opts?: Options): Logger => {
+
+    // for testing we can rig the output
+    const output = opts && (opts as any).__output || console;
+
+    // to console
+    const conslogger = opts && opts.disableConsole ? null : createConsLogger(output);
+
+    // the name spaced logger
+    const nsLogger = mkNnsLogger(null, conslogger);
+
+    return nsLogger(filterNs(opts && opts.appName || 'app'));
+};
 
 export interface ProxyLogger extends Logger {
     setProxyTarget: (target: Logger) => void;

@@ -34,6 +34,7 @@ export const createMockLogger = async () => {
         env: 'testing',
         compliance: Compliance.Full,
         disableTls: true,
+        disableUuid: true,
     });
     return { msg, log };
 };
