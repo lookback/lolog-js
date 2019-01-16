@@ -265,3 +265,16 @@ export const createLogger = (opts: Options): Logger => {
     return nsLogger(filterNs(opts.appName));
 };
 
+
+/**
+ * Create a logger that does nothing.
+ */
+export const createVoidLogger = (): Logger => ({
+    trace: (...args: any[]) => { },
+    debug: (...args: any[]) => { },
+    info: (...args: any[]) => { },
+    warn: (...args: any[]) => { },
+    error: (...args: any[]) => { },
+    sublogger: (sub: string) => createVoidLogger(),
+    setDebug: (debug: boolean) => { },
+});
