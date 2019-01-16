@@ -160,3 +160,7 @@ export declare const isOptions: (t: any, reject?: (msg: string) => void) => t is
  * Create a logger from the options.
  */
 export declare const createLogger: (opts: Options) => Logger;
+/**
+ * Create a logger that does nothing.
+ */
+export declare const createVoidLogger: () => Logger;
