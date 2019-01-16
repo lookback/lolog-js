@@ -184,6 +184,11 @@ export interface Options {
     disableConsole?: boolean;
 
     /**
+     * Do not add uuod msg.id to syslog
+     */
+    disableUuid?: boolean;
+
+    /**
      * How long to wait before disconnecting the syslog server
      * connection due to being idle. Millis.
      */
@@ -204,6 +209,7 @@ const ValidOptions = {
     apiKey: 'string',
     env: 'string',
     disableConsole: 'boolean',
+    disableUuid: 'boolean',
     idleTimeout: 'number',
     disableTls: 'boolean',
 };

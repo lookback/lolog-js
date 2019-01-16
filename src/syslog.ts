@@ -46,7 +46,7 @@ export const createSyslogger = (opts: Options): LoggerImpl => {
             message,
             hostname: opts.host,
             appName,
-            msgId: uuid.v4(),
+            msgId: !opts.disableUuid ? uuid.v4() : undefined,
             pid: process.pid,
             logglyKey: opts.apiKey,
             tags: {
