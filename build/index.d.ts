@@ -146,6 +146,10 @@ export interface Options {
      */
     disableConsole?: boolean;
     /**
+     * Do not add uuod msg.id to syslog
+     */
+    disableUuid?: boolean;
+    /**
      * How long to wait before disconnecting the syslog server
      * connection due to being idle. Millis.
      */
@@ -161,9 +165,9 @@ export declare const isOptions: (t: any, reject?: (msg: string) => void) => t is
  */
 export declare const createLogger: (opts: Options) => Logger;
 /**
- * Create a logger that does nothing.
+ * Create a logger that doesn't log to syslog. It does however log to console.
  */
-export declare const createVoidLogger: () => Logger;
+export declare const createVoidLogger: (opts?: Options | undefined) => Logger;
 export interface ProxyLogger extends Logger {
     setProxyTarget: (target: Logger) => void;
 }
