@@ -278,3 +278,27 @@ export const createVoidLogger = (): Logger => ({
     sublogger: (sub: string) => createVoidLogger(),
     setDebug: (debug: boolean) => { },
 });
+
+export interface ProxyLogger extends Logger {
+    setProxyTarget: (target: Logger) => void;
+}
+
+/**
+ * Create a logger that proxies to another logger.
+ */
+export const createProxyLogger = (target: Logger): ProxyLogger => {
+    // tslint:disable-next-line:no-let
+    let t = target;
+    return {
+        trace: (...args: any[]) => t.trace.apply(t, args),
+        debug: (...args: any[]) => t.debug.apply(t, args),
+        info: (...args: any[]) => t.info.apply(t, args),
+        warn: (...args: any[]) => t.warn.apply(t, args),
+        error: (...args: any[]) => t.error.apply(t, args),
+        sublogger: (sub: string) => t.sublogger.call(t, sub),
+        setDebug: (debug: boolean) => t.setDebug.call(t, debug),
+        setProxyTarget(target: Logger): void {
+            t = target;
+        },
+    };
+};
