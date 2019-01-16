@@ -164,3 +164,10 @@ export declare const createLogger: (opts: Options) => Logger;
  * Create a logger that does nothing.
  */
 export declare const createVoidLogger: () => Logger;
+export interface ProxyLogger extends Logger {
+    setProxyTarget: (target: Logger) => void;
+}
+/**
+ * Create a logger that proxies to another logger.
+ */
+export declare const createProxyLogger: (target: Logger) => ProxyLogger;
