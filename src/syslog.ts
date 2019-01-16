@@ -2,6 +2,7 @@ import { Options, Compliance } from ".";
 import { PreparedLog, Severity } from "./prepare";
 import { createClient, Client, Facility, SyslogSeverity } from "./driver";
 import * as isBrowser from "is-browser";
+import * as uuid from 'uuid';
 
 const wait = (ms: number) => new Promise(rs => setTimeout(rs, ms));
 
@@ -45,6 +46,7 @@ export const createSyslogger = (opts: Options): LoggerImpl => {
             message,
             hostname: opts.host,
             appName,
+            msgId: uuid.v4(),
             pid: process.pid,
             logglyKey: opts.apiKey,
             tags: {

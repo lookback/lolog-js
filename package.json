@@ -14,10 +14,12 @@
     "lint": "tslint --project ."
   },
   "dependencies": {
-    "is-browser": "^2.1.0"
+    "is-browser": "^2.1.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/node": "^10.12.18",
+    "@types/uuid": "^3.4.4",
     "ava": "^1.0.1",
     "browserify": "^16.2.3",
     "ts-node": "^7.0.1",
