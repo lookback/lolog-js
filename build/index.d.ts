@@ -31,6 +31,10 @@ export interface WellKnown {
      * User id.
      */
     userId?: string;
+    /**
+     * Ip address of user in question. Be very restrictive with logging this.
+     */
+    userIp?: string;
 }
 /**
  * Check if the given argument is a `LogWellKnown`. Every single field must be well known.
