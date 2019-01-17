@@ -130,6 +130,10 @@ export interface Options {
      */
     appName: string;
     /**
+     * Application version. Such as hash or similar.
+     */
+    appVersion?: string;
+    /**
      * How compliant the app is with our log definition.
      */
     compliance: Compliance;
