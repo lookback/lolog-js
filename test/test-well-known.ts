@@ -27,12 +27,3 @@ test('log recordingId as undefined', async t => {
     t.is(m, `<134>1 2019-01-10T07:22:49.669Z testhost test-app ${pid}` +
         ` - [apikey@41058 env="testing"] hi\n`);
 });
-
-test('log version', async t => {
-    const { msg, log } = await createMockLogger();
-    log.info('hi', { timestamp: 1547104969669, version: '2fcd85b' });
-    const m = await msg;
-    const pid = process.pid;
-    t.is(m, `<134>1 2019-01-10T07:22:49.669Z testhost test-app ${pid}` +
-        ` - [apikey@41058 env="testing"] hi {"version":"2fcd85b"}\n`);
-});

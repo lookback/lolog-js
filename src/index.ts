@@ -32,11 +32,6 @@ export interface WellKnown {
     timestamp?: number;
 
     /**
-     * Application/service version. Hash or number.
-     */
-    version?: string;
-
-    /**
      * Recording id.
      */
     recordingId?: string;
@@ -53,7 +48,6 @@ export interface WellKnown {
 
 // keep in sync with interface definition
 const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
-    version: 'string',
     timestamp: 'number',
     recordingId: 'string',
     userId: 'string',
