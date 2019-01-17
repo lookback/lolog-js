@@ -41,6 +41,11 @@ export interface WellKnown {
      */
     userId?: string;
 
+    /**
+     * Ip address of user in question. Be very restrictive with logging this.
+     */
+    userIp?: string;
+
     //
     // consult process to add more fields here.
     //
@@ -51,6 +56,7 @@ const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
     timestamp: 'number',
     recordingId: 'string',
     userId: 'string',
+    userIp: 'string',
 };
 
 /**
