@@ -12,7 +12,6 @@ test('hello world', async t => {
     const { msg, log } = await createMockLogger();
     log.info('hello world', { timestamp: 1547104969669 });
     const m = await msg;
-    const pid = process.pid;
-    t.is(m, `<134>1 2019-01-10T07:22:49.669Z testhost test-app ${pid}` +
+    t.is(m, `<134>1 2019-01-10T07:22:49.669Z testhost test-app 2.11` +
         ` - [apikey@41058 env="testing"] hello world\n`);
 });
