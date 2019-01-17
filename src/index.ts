@@ -30,14 +30,22 @@ export interface WellKnown {
      * Set log message timestamp with this. Millis since 1970.
      */
     timestamp?: number;
+
+    /**
+     * Application/service version. Hash or number.
+     */
+    version?: string;
+
     /**
      * Recording id.
      */
     recordingId?: string;
+
     /**
      * User id.
      */
     userId?: string;
+
     //
     // consult process to add more fields here.
     //
@@ -45,6 +53,7 @@ export interface WellKnown {
 
 // keep in sync with interface definition
 const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
+    version: 'string',
     timestamp: 'number',
     recordingId: 'string',
     userId: 'string',
