@@ -1,5 +1,5 @@
-import { connectWebsocket } from "./websock";
 import { connectSocket } from "./socket";
+import { connectHttp } from "./http";
 
 /**
  * Facility numbers according to spec.
@@ -125,8 +125,8 @@ export interface ClientOpts {
     host: string;
     /** Syslog port. */
     port: number;
-    /** Whether to connect with websocket. */
-    useWebSocket: boolean;
+    /** Whether to connect with http post. */
+    httpEndpoint?: string;
     /** Whether to use TLS or not. */
     useTls: boolean;
     /** The number of milliseconds to allow a socket to idle before disconnecting. */
@@ -137,7 +137,7 @@ export interface ClientOpts {
  * Create a syslog client from the given options.
  */
 export const createClient = async (copts: ClientOpts): Promise<Client> => {
-    const connect = copts.useWebSocket ? connectWebsocket : connectSocket;
+    const connect = copts.httpEndpoint ? connectHttp(copts.httpEndpoint) : connectSocket;
     // tslint:disable-next-line:no-let
     let lastErr: Error | undefined = undefined;
     const conn = await connect(copts).catch(e => {
