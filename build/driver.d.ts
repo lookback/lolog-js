@@ -86,8 +86,8 @@ export interface ClientOpts {
     host: string;
     /** Syslog port. */
     port: number;
-    /** Whether to connect with websocket. */
-    useWebSocket: boolean;
+    /** Whether to connect with http post. */
+    httpEndpoint?: string;
     /** Whether to use TLS or not. */
     useTls: boolean;
     /** The number of milliseconds to allow a socket to idle before disconnecting. */
