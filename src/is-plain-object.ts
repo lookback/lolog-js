@@ -4,10 +4,8 @@
  * Copyright (c) 2014-2017, Jon Schlinkert.
  * Released under the MIT License.
  */
-const isObject = require('isobject');
-
 function isObjectObject(o: any): boolean {
-    return isObject(o) === true
+    return o !== null && typeof o === 'object'
         && Object.prototype.toString.call(o) === '[object Object]';
 }
 
