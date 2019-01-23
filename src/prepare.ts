@@ -1,6 +1,7 @@
 // tslint:disable no-object-mutation
 
 import { isWellKnown } from ".";
+import { isPlainObject } from "./is-plain-object";
 
 /**
  * Enumeration of severities.
@@ -43,8 +44,8 @@ export const prepareLog = (
     const dataRaw = args.length == 3 ? args[2] : {};
 
     // our own local copies, so we can delete without affecting the input
-    const well = filterUndefined(wellRaw);
-    const data = filterUndefined(dataRaw);
+    const well = filterUnwanted(wellRaw);
+    const data = filterUnwanted(dataRaw);
 
     // ensure well know really only contains well known fields
     if (!isWellKnown(well, (msg) => console.log('Ignoring log row:', msg))) {
@@ -68,14 +69,32 @@ export const prepareLog = (
     };
 };
 
-// delete any undefined/null etc values
-const filterUndefined = (oin: any): any => {
-    const o = { ...oin };
-    for (const k of Object.keys(o)) {
-        const v = o[k];
-        if (v == null) { // deliberate ==
-            delete o[k];
-        }
+/** Recursive helper to remove complex objects. */
+// TODO fix for cyclic deps?
+export const filterUnwanted = (oin: any): any => {
+    if (!isOk(oin)) return undefined;
+    if (Array.isArray(oin)) {
+        return oin
+            .map(a => filterUnwanted(a))
+            .filter(a => a !== undefined);
+    } else if (typeof oin === 'object') {
+        const filtered = Object.entries(oin)
+            .map(([k, v]) => ([k, filterUnwanted(v)]))
+            .filter(([_, v]) => v !== undefined)
+            .map(([k, v]) => ({ [k]: v }));
+        return Object.assign({}, ...filtered);
     }
-    return o;
+    return oin;
+};
+
+/** Check if a single value is something we want. */
+const isOk = (v: any) => {
+    if (v == undefined) return false; // deliberately non-strict equality
+    if (typeof v === 'object') {
+        // null, array, plain or complex object
+        if (Array.isArray(v) || isPlainObject(v)) return true;
+        return false;
+    }
+    // string, boolean, number.
+    return true;
 };

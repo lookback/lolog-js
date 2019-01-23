@@ -48,14 +48,16 @@ export const connectHttp = (endpoint: string) =>
             // attempt to send the batch
             fetch(url, {
                 method: 'POST',
-                mode: 'cors',
+                mode: 'no-cors',
                 body,
             })
                 .then(res => {
                     if (res.status != 200) {
-                        throw new Error(`POST ${url}: ${res.status} ${res.statusText}`);
+                        const msg = `POST ${url}: ${res.status} ${res.statusText}`;
+                        return Promise.reject(new Error(msg));
                     }
                     cb(null);
+                    return Promise.resolve();
                 })
                 .catch(e => {
                     cb(e);
