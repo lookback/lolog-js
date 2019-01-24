@@ -1,9 +1,9 @@
-import { createSyslogger, LoggerImpl } from "./syslog";
-import { createConsLogger } from "./conslog";
-import { Severity, prepareLog } from "./prepare";
-import * as isBrowser from "is-browser";
-import { createLogglyLogger } from "./loggly";
-import { mkValidator } from "./validator";
+import * as isBrowser from 'is-browser';
+import { createConsLogger } from './conslog';
+import { createLogglyLogger } from './loggly';
+import { createSyslogger, LoggerImpl } from './syslog';
+import { mkValidator } from './validator';
+import { prepareLog, Severity } from './prepare';
 
 /**
  * The overloaded variants of logging.
