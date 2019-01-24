@@ -304,18 +304,15 @@ export const createLogger = (opts: Options): Logger => {
 /**
  * Create a logger that doesn't log to syslog. It does however log to console.
  */
-export const createVoidLogger = (opts?: Options): Logger => {
-
-    // for testing we can rig the output
-    const output = opts && (opts as any).__output || console;
+export const createVoidLogger = (disableConsole = false): Logger => {
 
     // to console
-    const conslogger = opts && opts.disableConsole ? null : createConsLogger(output);
+    const conslogger = disableConsole ? null : createConsLogger(console);
 
     // the name spaced logger
     const nsLogger = mkNnsLogger(null, conslogger);
 
-    return nsLogger(filterNs(opts && opts.appName || 'app'));
+    return nsLogger(filterNs('app'));
 };
 
 export interface ProxyLogger extends Logger {
