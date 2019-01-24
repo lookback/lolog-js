@@ -1,5 +1,5 @@
-import { PreparedLog, Severity } from "./prepare";
-import { LoggerImpl } from "./syslog";
+import { LoggerImpl } from './syslog';
+import { PreparedLog, Severity } from './prepare';
 
 export interface Output {
     debug(message?: any, ...optionalParams: any[]): void;

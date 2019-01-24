@@ -1,5 +1,5 @@
-import { connectSocket } from "./socket";
-import { connectHttp } from "./http";
+import { connectHttp } from './http';
+import { connectSocket } from './socket';
 
 /**
  * Facility numbers according to spec.

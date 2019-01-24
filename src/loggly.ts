@@ -1,6 +1,6 @@
-import { Options } from ".";
-import { LoggerImpl } from "./syslog";
-import { PreparedLog } from "./prepare";
+import { LoggerImpl } from './syslog';
+import { Options } from '.';
+import { PreparedLog } from './prepare';
 
 const declareLoggly = require('./loggly-2019-01-10.js');
 

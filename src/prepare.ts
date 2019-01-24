@@ -1,7 +1,7 @@
+import { isPlainObject } from './is-plain-object';
+import { isWellKnown } from '.';
 // tslint:disable no-object-mutation
 
-import { isWellKnown } from ".";
-import { isPlainObject } from "./is-plain-object";
 
 /**
  * Enumeration of severities.

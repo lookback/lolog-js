@@ -1,8 +1,13 @@
-import { Options, Compliance } from ".";
-import { PreparedLog, Severity } from "./prepare";
-import { createClient, Client, Facility, SyslogSeverity } from "./driver";
-import * as isBrowser from "is-browser";
+import * as isBrowser from 'is-browser';
 import * as uuid from 'uuid';
+import { Compliance, Options } from '.';
+import { PreparedLog, Severity } from './prepare';
+import {
+    Client,
+    createClient,
+    Facility,
+    SyslogSeverity,
+} from './driver';
 
 const wait = (ms: number) => new Promise(rs => setTimeout(rs, ms));
 
