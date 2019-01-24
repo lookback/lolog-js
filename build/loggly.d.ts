@@ -1,5 +1,5 @@
-import { Options } from ".";
-import { LoggerImpl } from "./syslog";
+import { LoggerImpl } from './syslog';
+import { Options } from '.';
 export interface LogglyTracker {
     push: {
         (message: string): void;

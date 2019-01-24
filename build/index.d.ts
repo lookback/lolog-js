@@ -175,7 +175,7 @@ export declare const createLogger: (opts: Options) => Logger;
 /**
  * Create a logger that doesn't log to syslog. It does however log to console.
  */
-export declare const createVoidLogger: (opts?: Options | undefined) => Logger;
+export declare const createVoidLogger: (disableConsole?: boolean) => Logger;
 export interface ProxyLogger extends Logger {
     setProxyTarget: (target: Logger) => void;
 }

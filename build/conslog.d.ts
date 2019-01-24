@@ -1,4 +1,4 @@
-import { LoggerImpl } from "./syslog";
+import { LoggerImpl } from './syslog';
 export interface Output {
     debug(message?: any, ...optionalParams: any[]): void;
     log(message?: any, ...optionalParams: any[]): void;

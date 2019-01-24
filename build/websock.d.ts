@@ -1,4 +1,4 @@
-import { ClientOpts, Transport } from "./driver";
+import { ClientOpts, Transport } from './driver';
 /**
  * Create a websocket transport for syslog messages.
  */
