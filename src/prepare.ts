@@ -79,14 +79,13 @@ const isPrimitive = (val: any) =>
     ['number', 'string', 'boolean'].includes(typeof val);
 
 /** Serialize and Error to a plain object, keeping commonly used properties. */
-export const serializeError = (err: Error): SerializedError => ({
-    ...Object.assign.apply(null, (['name', 'message', 'stack']
+export const serializeError = (err: Error): SerializedError =>
+    Object.assign.apply(null, (['name', 'message', 'stack']
         // Filter out unwanted
         .filter(k => isPrimitive((err as any)[k]))
         // Create new object array and spread the array on the return object
         .map((k: keyof Error) => ({ [k]: err[k] })))
-    ),
-});
+    );
 
 /** Recursive helper to remove complex objects. */
 // TODO fix for cyclic deps?
