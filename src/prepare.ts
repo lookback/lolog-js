@@ -69,7 +69,7 @@ export const prepareLog = (
     };
 };
 
-interface SerializedError {
+export interface SerializedError {
     name: string;
     message: string;
     stack?: string;
@@ -82,14 +82,13 @@ const isPrimitive = (val: any) =>
 export const serializeError = (
     err: Error
 ): SerializedError =>
-    ['name', 'message', 'stack']
+    ['name', 'message', 'stack']    // Wanted properties from Error
         .filter(prop => isPrimitive((err as any)[prop]))
         .reduce(
-            (acc, prop: keyof Error) => {
-                return {
+            (acc, prop: keyof Error) => ({
                 ...acc,
                 [prop]: err[prop],
-            };},
+            }),
             {} as SerializedError
         );
 
