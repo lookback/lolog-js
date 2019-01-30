@@ -1,3 +1,4 @@
+export { serializeError } from './prepare';
 /**
  * The overloaded variants of logging.
  */
