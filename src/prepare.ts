@@ -69,10 +69,41 @@ export const prepareLog = (
     };
 };
 
+interface SerializedError {
+    name: string;
+    message: string;
+    stack?: string;
+}
+
+const isPrimitive = (val: any) =>
+    typeof val === 'number' ||
+    typeof val === 'string' ||
+    typeof val === 'boolean';
+
+/** Serialize and Error to a plain object, keeping commonly used properties. */
+export const serializeError = (
+    err: Error
+): SerializedError =>
+    ['name', 'message', 'stack']
+        .filter(prop => isPrimitive((err as any)[prop]))
+        .reduce(
+            (acc, prop: keyof Error) => {
+                return {
+                ...acc,
+                [prop]: err[prop],
+            };},
+            {} as SerializedError
+        );
+
 /** Recursive helper to remove complex objects. */
 // TODO fix for cyclic deps?
 export const filterUnwanted = (oin: any): any => {
     if (!isOk(oin)) return undefined;
+
+    if (oin instanceof Error) {
+        return serializeError(oin);
+    }
+
     if (Array.isArray(oin)) {
         return oin
             .map(a => filterUnwanted(a))
@@ -92,7 +123,7 @@ const isOk = (v: any) => {
     if (v == undefined) return false; // deliberately non-strict equality
     if (typeof v === 'object') {
         // null, array, plain or complex object
-        if (Array.isArray(v) || isPlainObject(v)) return true;
+        if (Array.isArray(v) || isPlainObject(v) || v instanceof Error) return true;
         return false;
     }
     // string, boolean, number.

@@ -5,6 +5,8 @@ import { createSyslogger, LoggerImpl } from './syslog';
 import { mkValidator } from './validator';
 import { prepareLog, Severity } from './prepare';
 
+export { serializeError } from './prepare';
+
 /**
  * The overloaded variants of logging.
  */
