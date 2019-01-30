@@ -21,4 +21,9 @@ test('filterUnwanted', t => {
     t.deepEqual(filterUnwanted([1, {}]), [1, {}]);
     t.deepEqual(filterUnwanted([1, { k: 42 }]), [1, { k: 42 }]);
     t.deepEqual(filterUnwanted([1, { k: 42, j: undefined }]), [1, { k: 42 }]);
+
+    const err = filterUnwanted({ cause: new Error('Msg') });
+    t.is(err.cause.name, 'Error');
+    t.is(err.cause.message, 'Msg');
+    t.is(typeof err.cause.stack, 'string');
 });
