@@ -76,9 +76,7 @@ interface SerializedError {
 }
 
 const isPrimitive = (val: any) =>
-    typeof val === 'number' ||
-    typeof val === 'string' ||
-    typeof val === 'boolean';
+    ['number', 'string', 'boolean'].includes(typeof val);
 
 /** Serialize and Error to a plain object, keeping commonly used properties. */
 export const serializeError = (
