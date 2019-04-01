@@ -41,6 +41,7 @@ export interface SyslogMessage {
     msgId?: string;
     appName?: string;
     pid?: string | number;
+    apiKeyId?: string;
     apiKey?: string;
     tags?: {
         [key: string]: string;

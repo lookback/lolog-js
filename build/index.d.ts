@@ -145,6 +145,10 @@ export interface Options {
      */
     compliance: Compliance;
     /**
+     * Identifier of the secret sent to the syslog server.
+     */
+    apiKeyId: string;
+    /**
      * Some secret sent as a tag to the syslog server.
      */
     apiKey: string;
