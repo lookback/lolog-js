@@ -14,5 +14,5 @@ test('hello world', async () => {
     log.info('hello world', { timestamp: 1547104969669 });
     const m = await msg;
     assert.deepEqual(m, `<134>1 2019-01-10T07:22:49.669Z testhost test-app 2.11` +
-        ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`);
+        ` - [u@53595 apiKey="apikey" environment="testing"] hello world\n`);
 });
