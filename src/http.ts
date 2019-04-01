@@ -48,7 +48,7 @@ export const connectHttp = (endpoint: string) =>
             // attempt to send the batch
             fetch(url, {
                 method: 'POST',
-                mode: 'no-cors',
+                mode: 'cors',
                 body,
             })
                 .then(res => {
