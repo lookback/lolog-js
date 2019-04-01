@@ -74,10 +74,11 @@ test('rfc5424Row - apiKey', () => {
         severity: SyslogSeverity.Informational,
         message: 'hello world',
         timestamp: new Date(1547104969669),
+        apiKeyId: 'chrome',
         apiKey: 'abcd12345',
     });
     assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - - ' +
-    '[u@53595 apiKey="abcd12345"] hello world\n');
+    '[chrome@53595 apiKey="abcd12345"] hello world\n');
 });
 
 test('rfc5424Row - tags', () => {
@@ -115,11 +116,12 @@ test('rfc5424Row - apiKey + tags', () => {
         severity: SyslogSeverity.Informational,
         message: 'hello world',
         timestamp: new Date(1547104969669),
+        apiKeyId: 'chrome',
         apiKey: 'apikey',
         tags: {
             foo: 'abc47',
         },
     });
     assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - - ' +
-    '[u@53595 apiKey="apikey" foo="abc47"] hello world\n');
+    '[chrome@53595 apiKey="apikey" foo="abc47"] hello world\n');
 });

@@ -185,6 +185,11 @@ export interface Options {
     compliance: Compliance;
 
     /**
+     * Identifier of the secret sent to the syslog server.
+     */
+    apiKeyId: string;
+
+    /**
      * Some secret sent as a tag to the syslog server.
      */
     apiKey: string;
@@ -223,6 +228,7 @@ const ValidOptions = {
     appName: 'string',
     appVersion: 'string',
     compliance: 'string',
+    apiKeyId: 'string',
     apiKey: 'string',
     env: 'string',
     disableConsole: 'boolean',
@@ -233,7 +239,7 @@ const ValidOptions = {
 
 export const isOptions: (t: any, reject?: (msg: string) => void) => t is Options
     = mkValidator(ValidOptions, [
-        'logHost', 'logPort', 'host', 'appName', 'compliance', 'apiKey', 'env',
+        'logHost', 'logPort', 'host', 'appName', 'compliance', 'apiKeyId', 'apiKey', 'env',
     ]);
 
 /** Helper to remove unwanted chars from namespaces */

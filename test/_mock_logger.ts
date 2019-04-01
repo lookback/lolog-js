@@ -31,6 +31,7 @@ export const createMockLogger = async () => {
         host: 'testhost',
         appName: 'test-app',
         appVersion: '2.11',
+        apiKeyId: 'u',
         apiKey: 'apikey',
         env: 'testing',
         compliance: Compliance.Full,
