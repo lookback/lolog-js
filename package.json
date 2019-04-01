@@ -8,7 +8,7 @@
   "private": true,
   "scripts": {
     "test": "npm run lint && loltest",
-    "build": "tsc && cp ./src/*.js ./build/ && browserify -r ./build/index.js:lolog ./build/index.js> ./lolog.js",
+    "build": "tsc && browserify -r ./build/index.js:lolog ./build/index.js> ./lolog.js",
     "watch": "tsc -w",
     "lint": "tslint --project ."
   },
