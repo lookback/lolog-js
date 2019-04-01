@@ -7,7 +7,7 @@ test('make sublogger', async t => {
     sublog.info('hello world', { timestamp: 1547104969669 });
     const m = await msg;
     t.is(m, `<134>1 2019-01-10T07:22:49.669Z testhost test-app.live-player 2.11` +
-        ` - [apikey@41058 env="testing"] hello world\n`);
+        ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`);
 });
 
 test('make sublogger with bad chars', async t => {
@@ -16,5 +16,5 @@ test('make sublogger with bad chars', async t => {
     sublog.info('hello world', { timestamp: 1547104969669 });
     const m = await msg;
     t.is(m, `<134>1 2019-01-10T07:22:49.669Z testhost test-app.fetthej2 2.11` +
-        ` - [apikey@41058 env="testing"] hello world\n`);
+        ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`);
 });

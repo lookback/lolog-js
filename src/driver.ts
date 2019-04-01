@@ -46,7 +46,7 @@ export interface SyslogMessage {
     msgId?: string;
     appName?: string;
     pid?: string | number;
-    logglyKey?: string;
+    apiKey?: string;
     tags?: { [key: string]: string };
 }
 
@@ -85,14 +85,19 @@ const nil = (s?: string) => is7bit(s) ? s : '-';
 const escapeSdParam = (v: string) =>
     v.replace(/\\/g, '\\\\').replace(/\"/g, '\\"').replace(/]/g, '\\]');
 
+// example log row:
+// <134>1 2019-03-12T22:30:09.671872+00:00 dormammu.dev.lookback.io dormammu 4 -
+// [u@53595 apiKey="secret" environment="development"]
+// helloworld {"recordingID":"abc123", "test": "wow"}
+// 53595 is an private enterprise number (PEN) for Lookback
+// as assigned by IANA. https://www.iana.org/assignments/enterprise-numbers
+// One can apply for our here: https://pen.iana.org/pen/PenApplication.page
+
 const rfc5424Structured = (msg: SyslogMessage): string => {
     const sdElems = [];
-    if (msg.logglyKey) {
-        // 41058 is an private enterprise number (PEN) for Loggly
-        // as assigned by IANA. https://www.iana.org/assignments/enterprise-numbers
-        // we can apply for our own here:
-        // https://pen.iana.org/pen/PenApplication.page
-        sdElems.push(`${msg.logglyKey}@41058`);
+    if (msg.apiKey) {
+        sdElems.push(`u@53595`);
+        sdElems.push(`apiKey="${msg.apiKey}"`);
     }
     const sd = msg.tags || {};
     for (const sdId of Object.keys(sd)) {

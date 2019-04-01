@@ -1,6 +1,4 @@
-import * as isBrowser from 'is-browser';
 import { createConsLogger } from './conslog';
-import { createLogglyLogger } from './loggly';
 import { createSyslogger, LoggerImpl } from './syslog';
 import { mkValidator } from './validator';
 import { prepareLog, Severity } from './prepare';
@@ -288,9 +286,7 @@ export const createLogger = (opts: Options): Logger => {
     });
 
     // create the syslog instance
-    // TODO remove the loggly logger here when we are rolled out with our own ingester.
-    // const syslogger = createSyslogger(opts);
-    const syslogger = isBrowser ? createLogglyLogger(opts) : createSyslogger(opts);
+    const syslogger = createSyslogger(opts);
 
     // for testing we can rig the output
     const output = (opts as any).__output || console;

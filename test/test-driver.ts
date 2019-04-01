@@ -66,15 +66,15 @@ test('rfc5424Row - msgid', t => {
     t.is(row, '<134>1 2019-01-10T07:22:49.669Z - - - abcd12345 - hello world\n');
 });
 
-test('rfc5424Row - logglyKey', t => {
+test('rfc5424Row - apiKey', t => {
     const row = rfc5424Row({
         facility: Facility.Local0,
         severity: SyslogSeverity.Informational,
         message: 'hello world',
         timestamp: new Date(1547104969669),
-        logglyKey: 'abcd12345',
+        apiKey: 'abcd12345',
     });
-    t.is(row, '<134>1 2019-01-10T07:22:49.669Z - - - - [abcd12345@41058] hello world\n');
+    t.is(row, '<134>1 2019-01-10T07:22:49.669Z - - - - [u@53595 apiKey="abcd12345"] hello world\n');
 });
 
 test('rfc5424Row - tags', t => {
@@ -104,16 +104,17 @@ test('rfc5424Row - tags escaping', t => {
     t.is(row, '<134>1 2019-01-10T07:22:49.669Z - - - - [foo="a\\"bc\\\\4\\]7"] hello world\n');
 });
 
-test('rfc5424Row - loggly + tags', t => {
+test('rfc5424Row - apiKey + tags', t => {
     const row = rfc5424Row({
         facility: Facility.Local0,
         severity: SyslogSeverity.Informational,
         message: 'hello world',
         timestamp: new Date(1547104969669),
-        logglyKey: 'abcd',
+        apiKey: 'apikey',
         tags: {
             foo: 'abc47',
         },
     });
-    t.is(row, '<134>1 2019-01-10T07:22:49.669Z - - - - [abcd@41058 foo="abc47"] hello world\n');
+    t.is(row, '<134>1 2019-01-10T07:22:49.669Z - - - - ' +
+    '[u@53595 apiKey="apikey" foo="abc47"] hello world\n');
 });
