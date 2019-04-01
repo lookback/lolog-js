@@ -1,5 +1,5 @@
-import * as isBrowser from 'is-browser';
-import * as uuid from 'uuid';
+import isBrowser from 'is-browser';
+import uuid from 'uuid';
 import { Compliance, Options } from '.';
 import { PreparedLog, Severity } from './prepare';
 import {

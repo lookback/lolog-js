@@ -10,6 +10,7 @@
 			"dom"
 		],
 		"target": "es2015",
+		"esModuleInterop": true,
 		"module": "commonjs",
 		"inlineSourceMap": true,
 		"declaration": true,
