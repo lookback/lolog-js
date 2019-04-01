@@ -1,9 +1,10 @@
-import test from 'ava';
+import { test } from 'loltest';
 import { serializeError } from '../src';
+import assert from 'assert';
 
-test('serializeError', t => {
+test('serializeError', () => {
     const serialized = serializeError(new Error('Foo'));
-    t.is(serialized.message, 'Foo');
-    t.is(serialized.name, 'Error');
-    t.is(typeof serialized.stack, 'string');
+    assert.deepEqual(serialized.message, 'Foo');
+    assert.deepEqual(serialized.name, 'Error');
+    assert.deepEqual(typeof serialized.stack, 'string');
 });

@@ -1,4 +1,4 @@
-import * as net from 'net';
+import net from 'net';
 import { AddressInfo } from 'net';
 import { createLogger, Compliance } from '../src/index';
 

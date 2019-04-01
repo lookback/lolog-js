@@ -1,15 +1,16 @@
-import test from 'ava';
+import { test } from 'loltest';
 import { createVoidLogger } from '../src';
+import assert from 'assert';
 
-test('create void logger', t => {
+test('create void logger', () => {
     const logger = createVoidLogger();
-    t.truthy(logger);
+    assert.ok(logger);
     logger.info("hello world");
 });
 
-test('create void sublogger', t => {
+test('create void sublogger', () => {
     const logger = createVoidLogger();
     const sub = logger.sublogger("foo");
-    t.truthy(sub);
+    assert.ok(sub);
     sub.info("hello world");
 });

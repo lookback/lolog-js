@@ -1,17 +1,18 @@
-import test from 'ava';
+import { test } from 'loltest';
 import { rfc5424Row, Facility, SyslogSeverity } from '../src/driver';
+import assert from 'assert';
 
-test('rfc5424Row - message', t => {
+test('rfc5424Row - message', () => {
     const row = rfc5424Row({
         facility: Facility.Local0,
         severity: SyslogSeverity.Informational,
         message: 'hello world',
         timestamp: new Date(1547104969669),
     });
-    t.is(row, '<134>1 2019-01-10T07:22:49.669Z - - - - - hello world\n');
+    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - - - hello world\n');
 });
 
-test('rfc5424Row - hostname', t => {
+test('rfc5424Row - hostname', () => {
     const row = rfc5424Row({
         facility: Facility.Local1,
         severity: SyslogSeverity.Informational,
@@ -19,10 +20,11 @@ test('rfc5424Row - hostname', t => {
         timestamp: new Date(1547104969669),
         hostname: 'i-12345677.eu-west1',
     });
-    t.is(row, '<142>1 2019-01-10T07:22:49.669Z i-12345677.eu-west1 - - - - hello world\n');
+    assert.deepEqual(row, '<142>1 2019-01-10T07:22:49.669Z ' +
+      'i-12345677.eu-west1 - - - - hello world\n');
 });
 
-test('rfc5424Row - appname', t => {
+test('rfc5424Row - appname', () => {
     const row = rfc5424Row({
         facility: Facility.Local0,
         severity: SyslogSeverity.Debug,
@@ -30,10 +32,10 @@ test('rfc5424Row - appname', t => {
         timestamp: new Date(1547104969669),
         appName: 'site-liveplayer',
     });
-    t.is(row, '<135>1 2019-01-10T07:22:49.669Z - site-liveplayer - - - hello world\n');
+    assert.deepEqual(row, '<135>1 2019-01-10T07:22:49.669Z - site-liveplayer - - - hello world\n');
 });
 
-test('rfc5424Row - procid (number)', t => {
+test('rfc5424Row - procid (number)', () => {
     const row = rfc5424Row({
         facility: Facility.Local0,
         severity: SyslogSeverity.Informational,
@@ -41,10 +43,10 @@ test('rfc5424Row - procid (number)', t => {
         timestamp: new Date(1547104969669),
         pid: 12345,
     });
-    t.is(row, '<134>1 2019-01-10T07:22:49.669Z - - 12345 - - hello world\n');
+    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - 12345 - - hello world\n');
 });
 
-test('rfc5424Row - procid (string)', t => {
+test('rfc5424Row - procid (string)', () => {
     const row = rfc5424Row({
         facility: Facility.Local0,
         severity: SyslogSeverity.Informational,
@@ -52,10 +54,10 @@ test('rfc5424Row - procid (string)', t => {
         timestamp: new Date(1547104969669),
         pid: 'yo',
     });
-    t.is(row, '<134>1 2019-01-10T07:22:49.669Z - - yo - - hello world\n');
+    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - yo - - hello world\n');
 });
 
-test('rfc5424Row - msgid', t => {
+test('rfc5424Row - msgid', () => {
     const row = rfc5424Row({
         facility: Facility.Local0,
         severity: SyslogSeverity.Informational,
@@ -63,10 +65,10 @@ test('rfc5424Row - msgid', t => {
         timestamp: new Date(1547104969669),
         msgId: 'abcd12345',
     });
-    t.is(row, '<134>1 2019-01-10T07:22:49.669Z - - - abcd12345 - hello world\n');
+    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - abcd12345 - hello world\n');
 });
 
-test('rfc5424Row - apiKey', t => {
+test('rfc5424Row - apiKey', () => {
     const row = rfc5424Row({
         facility: Facility.Local0,
         severity: SyslogSeverity.Informational,
@@ -74,10 +76,11 @@ test('rfc5424Row - apiKey', t => {
         timestamp: new Date(1547104969669),
         apiKey: 'abcd12345',
     });
-    t.is(row, '<134>1 2019-01-10T07:22:49.669Z - - - - [u@53595 apiKey="abcd12345"] hello world\n');
+    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - - ' +
+    '[u@53595 apiKey="abcd12345"] hello world\n');
 });
 
-test('rfc5424Row - tags', t => {
+test('rfc5424Row - tags', () => {
     const row = rfc5424Row({
         facility: Facility.Local0,
         severity: SyslogSeverity.Informational,
@@ -88,10 +91,11 @@ test('rfc5424Row - tags', t => {
             bar: '123yy',
         },
     });
-    t.is(row, '<134>1 2019-01-10T07:22:49.669Z - - - - [foo="abc47" bar="123yy"] hello world\n');
+    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - - ' +
+    '[foo="abc47" bar="123yy"] hello world\n');
 });
 
-test('rfc5424Row - tags escaping', t => {
+test('rfc5424Row - tags escaping', () => {
     const row = rfc5424Row({
         facility: Facility.Local0,
         severity: SyslogSeverity.Informational,
@@ -101,10 +105,11 @@ test('rfc5424Row - tags escaping', t => {
             foo: 'a"bc\\4]7',
         },
     });
-    t.is(row, '<134>1 2019-01-10T07:22:49.669Z - - - - [foo="a\\"bc\\\\4\\]7"] hello world\n');
+    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - - ' +
+    '[foo="a\\"bc\\\\4\\]7"] hello world\n');
 });
 
-test('rfc5424Row - apiKey + tags', t => {
+test('rfc5424Row - apiKey + tags', () => {
     const row = rfc5424Row({
         facility: Facility.Local0,
         severity: SyslogSeverity.Informational,
@@ -115,6 +120,6 @@ test('rfc5424Row - apiKey + tags', t => {
             foo: 'abc47',
         },
     });
-    t.is(row, '<134>1 2019-01-10T07:22:49.669Z - - - - ' +
+    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - - ' +
     '[u@53595 apiKey="apikey" foo="abc47"] hello world\n');
 });

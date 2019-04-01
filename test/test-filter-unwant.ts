@@ -1,29 +1,30 @@
-import test from 'ava';
+import { test } from 'loltest';
 import { filterUnwanted } from '../src/prepare';
+import assert from 'assert';
 
-test('filterUnwanted', t => {
-    t.is(filterUnwanted(undefined), undefined);
-    t.is(filterUnwanted(null), undefined);
-    t.is(filterUnwanted(''), '');
-    t.is(filterUnwanted(false), false);
-    t.is(filterUnwanted(42), 42);
-    t.deepEqual(filterUnwanted({}), {});
-    t.deepEqual(filterUnwanted({ k: 42, j: 43 }), { k: 42, j: 43 });
-    t.deepEqual(filterUnwanted({ k: undefined }), {});
-    t.deepEqual(filterUnwanted({ k: new Buffer('') }), {});
-    t.deepEqual(filterUnwanted([]), []);
-    t.deepEqual(filterUnwanted([1, 2]), [1, 2]);
-    t.deepEqual(filterUnwanted([1, undefined]), [1]);
-    t.deepEqual(filterUnwanted([1, new Set()]), [1]);
-    t.deepEqual(filterUnwanted({ k: [] }), { k: [] });
-    t.deepEqual(filterUnwanted({ k: [1, 2] }), { k: [1, 2] });
-    t.deepEqual(filterUnwanted({ k: [1, undefined] }), { k: [1] });
-    t.deepEqual(filterUnwanted([1, {}]), [1, {}]);
-    t.deepEqual(filterUnwanted([1, { k: 42 }]), [1, { k: 42 }]);
-    t.deepEqual(filterUnwanted([1, { k: 42, j: undefined }]), [1, { k: 42 }]);
+test('filterUnwanted', () => {
+    assert.deepEqual(filterUnwanted(undefined), undefined);
+    assert.deepEqual(filterUnwanted(null), undefined);
+    assert.deepEqual(filterUnwanted(''), '');
+    assert.deepEqual(filterUnwanted(false), false);
+    assert.deepEqual(filterUnwanted(42), 42);
+    assert.deepEqual(filterUnwanted({}), {});
+    assert.deepEqual(filterUnwanted({ k: 42, j: 43 }), { k: 42, j: 43 });
+    assert.deepEqual(filterUnwanted({ k: undefined }), {});
+    assert.deepEqual(filterUnwanted({ k: new Buffer('') }), {});
+    assert.deepEqual(filterUnwanted([]), []);
+    assert.deepEqual(filterUnwanted([1, 2]), [1, 2]);
+    assert.deepEqual(filterUnwanted([1, undefined]), [1]);
+    assert.deepEqual(filterUnwanted([1, new Set()]), [1]);
+    assert.deepEqual(filterUnwanted({ k: [] }), { k: [] });
+    assert.deepEqual(filterUnwanted({ k: [1, 2] }), { k: [1, 2] });
+    assert.deepEqual(filterUnwanted({ k: [1, undefined] }), { k: [1] });
+    assert.deepEqual(filterUnwanted([1, {}]), [1, {}]);
+    assert.deepEqual(filterUnwanted([1, { k: 42 }]), [1, { k: 42 }]);
+    assert.deepEqual(filterUnwanted([1, { k: 42, j: undefined }]), [1, { k: 42 }]);
 
     const err = filterUnwanted({ cause: new Error('Msg') });
-    t.is(err.cause.name, 'Error');
-    t.is(err.cause.message, 'Msg');
-    t.is(typeof err.cause.stack, 'string');
+    assert.deepEqual(err.cause.name, 'Error');
+    assert.deepEqual(err.cause.message, 'Msg');
+    assert.deepEqual(typeof err.cause.stack, 'string');
 });

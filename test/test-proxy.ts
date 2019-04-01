@@ -1,9 +1,10 @@
 // tslint:disable
 
-import test from 'ava';
+import { test } from 'loltest';
 import { createVoidLogger, createProxyLogger } from '../src';
+import assert from 'assert';
 
-test('create proxy', t => {
+test('create proxy', () => {
     const target = createVoidLogger();
     let foo = null;
     target.trace = (a: string) => {
@@ -11,10 +12,10 @@ test('create proxy', t => {
     };
     const logger = createProxyLogger(target);
     logger.trace('hello world');
-    t.is(foo, 'hello world');
+    assert.deepEqual(foo, 'hello world');
 });
 
-test('switch proxy', t => {
+test('switch proxy', () => {
     const target1 = createVoidLogger();
     const target2 = createVoidLogger();
     let foo1 = null;
@@ -28,6 +29,6 @@ test('switch proxy', t => {
     const logger = createProxyLogger(target1);
     logger.setProxyTarget(target2);
     logger.trace('hello world');
-    t.is(foo1, null);
-    t.is(foo2, 'hello world');
+    assert.deepEqual(foo1, null);
+    assert.deepEqual(foo2, 'hello world');
 });
