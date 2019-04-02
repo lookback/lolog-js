@@ -36,7 +36,7 @@ export const createSyslogger = (opts: Options): LoggerImpl => {
 
     const clientLog = async (
         severity: SyslogSeverity,
-        environment: string,
+        env: string,
         appName: string,
         timestamp: Date,
         message: string,
@@ -56,7 +56,7 @@ export const createSyslogger = (opts: Options): LoggerImpl => {
             apiKeyId: opts.apiKeyId,
             apiKey: opts.apiKey,
             tags: {
-                environment,
+                env,
             },
         });
     };
