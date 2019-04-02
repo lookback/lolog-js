@@ -55,7 +55,7 @@ export const connectHttp = (endpoint: string) =>
                     // res status 0 is cors
                     if (res.status != 200 && res.status != 0) {
                         const msg = `POST ${url}: ${res.status} ${res.statusText}`;
-                        return Promise.reject(new Error(msg));
+                        throw new Error(msg);
                     }
                     cb(null);
                     return Promise.resolve();
