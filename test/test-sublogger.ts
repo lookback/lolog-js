@@ -8,7 +8,7 @@ test('make sublogger', async () => {
     sublog.info('hello world', { timestamp: 1547104969669 });
     const m = await msg;
     assert.deepEqual(m, `<134>1 2019-01-10T07:22:49.669Z testhost test-app.live-player 2.11` +
-        ` - [u@53595 apiKey="apikey" environment="testing"] hello world\n`);
+        ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`);
 });
 
 test('make sublogger with bad chars', async () => {
@@ -17,5 +17,5 @@ test('make sublogger with bad chars', async () => {
     sublog.info('hello world', { timestamp: 1547104969669 });
     const m = await msg;
     assert.deepEqual(m, `<134>1 2019-01-10T07:22:49.669Z testhost test-app.fetthej2 2.11` +
-        ` - [u@53595 apiKey="apikey" environment="testing"] hello world\n`);
+        ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`);
 });
