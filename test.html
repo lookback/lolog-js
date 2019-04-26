@@ -1,0 +1,28 @@
+<html>
+
+<head>
+  <title>lolog test</title>
+</head>
+
+<body>
+  <script src="./lolog.js"></script>
+  <script>
+    const lolog = require('lolog');
+    const log = lolog.createLogger({
+      logHost: 'logrelay-http.lookback.io',
+      logPort: 443,
+      //logHost: 'localhost',
+      //logPort: 8888,
+      //disableTls: true,
+      host: 'browser',
+      appName: 'chrome',
+      apiKeyId: 'chrome',
+      apiKey: 'PTYXZkufbVMrEYFtuuhqJsokutNx7Bpi',
+      env: 'testing',
+      compliance: lolog.Compliance.Full,
+    });
+    log.info('hello', { recordingId: 'abc123' }, { random: 42 });
+  </script>
+</body>
+
+</html>
