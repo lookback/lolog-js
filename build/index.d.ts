@@ -21,12 +21,6 @@ export declare type Data = {
  */
 export interface WellKnown {
     /**
-     * Set log message timestamp with this. Millis since 1970.
-     * This is _NOT_ a WellKnown field for lolog server. It's simply here
-     * for convenience in the lolog-js API.
-     */
-    timestamp?: number;
-    /**
      * Recording id.
      */
     recordingId?: string;
@@ -38,6 +32,22 @@ export interface WellKnown {
      * Ip address of user in question. Be very restrictive with logging this.
      */
     userIp?: string;
+    /**
+     * Id of a session grouping a number of log rows. The specific meaning is
+     * to be defined by subsystem. In dormammu it is what used to be called
+     * connectionId (or sometimes peerId): an id per connection that changes
+     * on every reconnect. In umar it is per replay session. Consecutive replays
+     * would cause different sessionId.
+     */
+    sessionId?: string;
+}
+export interface LocalWellKnown extends WellKnown {
+    /**
+     * Set log message timestamp with this. Millis since 1970.
+     * This is _NOT_ a WellKnown field for lolog server. It's simply here
+     * for convenience in the lolog-js API.
+     */
+    timestamp?: number;
 }
 /**
  * Check if the given argument is a `LogWellKnown`. Every single field must be well known.
