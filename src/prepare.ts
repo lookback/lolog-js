@@ -52,8 +52,8 @@ export const prepareLog = (
         return;
     }
 
-    const timestamp = well.timestamp || Date.now();
-    delete well.timestamp;
+    const timestamp = (<any>well).timestamp || Date.now();
+    delete (<any>well).timestamp;
 
     const dataLen = Object.keys(data).length;
     const mergaroo: { [key: string]: any } = { ...well, ...(dataLen ? { data } : {}) };

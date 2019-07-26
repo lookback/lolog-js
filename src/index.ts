@@ -27,13 +27,6 @@ export type Data = { [key: string]: any };
  */
 export interface WellKnown {
     /**
-     * Set log message timestamp with this. Millis since 1970.
-     * This is _NOT_ a WellKnown field for lolog server. It's simply here
-     * for convenience in the lolog-js API.
-     */
-    timestamp?: number;
-
-    /**
      * Recording id.
      */
     recordingId?: string;
@@ -51,6 +44,15 @@ export interface WellKnown {
     //
     // consult process to add more fields here.
     //
+}
+
+export interface LocalWellKnown extends WellKnown {
+    /**
+     * Set log message timestamp with this. Millis since 1970.
+     * This is _NOT_ a WellKnown field for lolog server. It's simply here
+     * for convenience in the lolog-js API.
+     */
+    timestamp?: number;
 }
 
 // keep in sync with interface definition
