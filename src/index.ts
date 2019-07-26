@@ -41,6 +41,15 @@ export interface WellKnown {
      */
     userIp?: string;
 
+    /**
+     * Id of a session grouping a number of log rows. The specific meaning is
+     * to be defined by subsystem. In dormammu it is what used to be called
+     * connectionId (or sometimes peerId): an id per connection that changes
+     * on every reconnect. In umar it is per replay session. Consecutive replays
+     * would cause different sessionId.
+     */
+    sessionId?: string;
+
     //
     // consult process to add more fields here.
     //
@@ -61,6 +70,7 @@ const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
     recordingId: 'string',
     userId: 'string',
     userIp: 'string',
+    sessionId: 'string',
 };
 
 /**
