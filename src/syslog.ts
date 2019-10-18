@@ -26,10 +26,10 @@ export const createSyslogger = (opts: Options): LoggerImpl => {
     const connectClient = async () => {
         const httpEndpoint = isBrowser ? '/log' : undefined;
         client = await createClient({
-            host: opts.logHost,
-            port: opts.logPort,
+            host: opts.logHost || String(process.env.SYSLOG_HOST),
+            port: opts.logPort || Number(process.env.SYSLOG_PORT),
             httpEndpoint,
-            useTls: !opts.disableTls,
+            useTls: !opts.disableTls || !Boolean(process.env.SYSLOG_TLS),
             timeout: idleTimeout,
         });
     };
