@@ -184,7 +184,7 @@ export interface Options {
      */
     disableTls?: boolean;
 }
-export declare const createOptionsFromEnv: () => Partial<Options>;
+export declare const createOptionsFromEnv: () => Pick<Options, "logHost" | "logPort" | "apiKeyId" | "apiKey" | "disableTls">;
 export declare const isOptions: (t: any, reject?: (msg: string) => void) => t is Options;
 /**
  * Create a logger from the options.
