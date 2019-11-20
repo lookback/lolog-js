@@ -249,7 +249,10 @@ const ValidOptions = {
     disableTls: 'boolean',
 };
 
-export const createOptionsFromEnv = (): Partial<Options> => ({
+export const createOptionsFromEnv = (): Pick<
+    Options,
+    'logHost' | 'logPort' | 'apiKeyId' | 'apiKey' | 'disableTls'
+> => ({
     logHost: getEnv('SYSLOG_HOST'),
     logPort: parseInt(getEnv('SYSLOG_PORT'), 10),
     apiKeyId: getEnv('SYSLOG_API_KEY_ID'),
