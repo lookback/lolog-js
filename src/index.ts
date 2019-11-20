@@ -249,6 +249,22 @@ const ValidOptions = {
     disableTls: 'boolean',
 };
 
+export const createOptionsFromEnv = (): Partial<Options> => ({
+    logHost: getEnv('SYSLOG_HOST'),
+    logPort: parseInt(getEnv('SYSLOG_PORT'), 10),
+    apiKeyId: getEnv('SYSLOG_API_KEY_ID'),
+    apiKey: getEnv('SYSLOG_API_KEY'),
+    disableTls: !process.env.SYSLOG_TLS,
+});
+
+const getEnv = (n: string): string => {
+    const x = process.env[n];
+    if (!x) {
+        throw new Error(`Missing env var: ${n}`);
+    }
+    return x;
+};
+
 export const isOptions: (t: any, reject?: (msg: string) => void) => t is Options
     = mkValidator(ValidOptions, [
         'logHost', 'logPort', 'host', 'appName', 'compliance', 'apiKeyId', 'apiKey', 'env',
