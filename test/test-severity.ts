@@ -4,14 +4,14 @@ import assert from 'assert';
 
 test('not send trace', async () => {
     const { msg, log } = await createMockLogger();
-    log.trace('hello world', { timestamp: 1547104969669 });
+    log.trace('hello world', <any>{ timestamp: 1547104969669 });
     const m = await msg.catch(() => 'not sent');
     assert.deepEqual(m, 'not sent');
 });
 
 test('by default not send debug', async () => {
     const { msg, log } = await createMockLogger();
-    log.debug('hello world', { timestamp: 1547104969669 });
+    log.debug('hello world', <any>{ timestamp: 1547104969669 });
     const m = await msg.catch(() => 'not sent');
     assert.deepEqual(m, 'not sent');
 });
@@ -19,7 +19,7 @@ test('by default not send debug', async () => {
 test('send debug if enabled', async () => {
     const { msg, log } = await createMockLogger();
     log.setDebug(true);
-    log.debug('hello world', { timestamp: 1547104969669 });
+    log.debug('hello world', <any>{ timestamp: 1547104969669 });
     const m = await msg;
     assert.deepEqual(m, `<135>1 2019-01-10T07:22:49.669Z testhost test-app 2.11` +
         ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`);
@@ -28,7 +28,7 @@ test('send debug if enabled', async () => {
 test('not send trace even if debug is enabled', async () => {
     const { msg, log } = await createMockLogger();
     log.setDebug(true);
-    log.trace('hello world', { timestamp: 1547104969669 });
+    log.trace('hello world', <any>{ timestamp: 1547104969669 });
     const m = await msg.catch(() => 'not sent');
     assert.deepEqual(m, 'not sent');
 });

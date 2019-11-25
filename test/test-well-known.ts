@@ -4,7 +4,7 @@ import assert from 'assert';
 
 test('log recordingId', async () => {
     const { msg, log } = await createMockLogger();
-    log.info('hi', { timestamp: 1547104969669, recordingId: 'abc123' });
+    log.info('hi', <any>{ timestamp: 1547104969669, recordingId: 'abc123' });
     const m = await msg;
     assert.deepEqual(m, `<134>1 2019-01-10T07:22:49.669Z testhost test-app 2.11` +
         ` - [u@53595 apiKey="apikey" env="testing"] hi {"recordingId":"abc123"}\n`);
@@ -12,7 +12,7 @@ test('log recordingId', async () => {
 
 test('log recordingId and userId', async () => {
     const { msg, log } = await createMockLogger();
-    log.info('hi', { timestamp: 1547104969669, recordingId: 'r123', userId: 'u123' });
+    log.info('hi', <any>{ timestamp: 1547104969669, recordingId: 'r123', userId: 'u123' });
     const m = await msg;
     assert.deepEqual(m, `<134>1 2019-01-10T07:22:49.669Z testhost test-app 2.11` +
         ` - [u@53595 apiKey="apikey" env="testing"] hi ` +
@@ -21,7 +21,7 @@ test('log recordingId and userId', async () => {
 
 test('log recordingId as undefined', async () => {
     const { msg, log } = await createMockLogger();
-    log.info('hi', { timestamp: 1547104969669, recordingId: undefined });
+    log.info('hi', <any>{ timestamp: 1547104969669, recordingId: undefined });
     const m = await msg;
     assert.deepEqual(m, `<134>1 2019-01-10T07:22:49.669Z testhost test-app 2.11` +
         ` - [u@53595 apiKey="apikey" env="testing"] hi\n`);
@@ -29,7 +29,7 @@ test('log recordingId as undefined', async () => {
 
 test('log userIp', async () => {
     const { msg, log } = await createMockLogger();
-    log.info('hi', { timestamp: 1547104969669, userIp: '1.2.3.4' });
+    log.info('hi', <any>{ timestamp: 1547104969669, userIp: '1.2.3.4' });
     const m = await msg;
     assert.deepEqual(m, `<134>1 2019-01-10T07:22:49.669Z testhost test-app 2.11` +
         ` - [u@53595 apiKey="apikey" env="testing"] hi {\"userIp\":\"1.2.3.4\"}\n`);
