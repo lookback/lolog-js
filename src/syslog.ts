@@ -71,16 +71,14 @@ export const createSyslogger = (opts: Options): LoggerImpl => {
             : prep.message;
         const timestamp = new Date(prep.timestamp);
 
-        const logit = () => clientLog(
+        const logit = (): Promise<any> => clientLog(
             syslogSeverity,
             opts.env,
             prep.appName,
             timestamp,
             logRow
-        );
-
-        // log with retries
-        logit().catch(e => {
+        )
+        .catch(e => {
             if (Date.now() - timestamp.getTime() > 60_000) {
                 console.warn("Failed to send to syslog server", logRow, e);
                 return;
@@ -88,6 +86,9 @@ export const createSyslogger = (opts: Options): LoggerImpl => {
                 return wait(3_000).then(logit);
             }
         });
+
+        // log with retries
+        logit();
     };
 };
 
