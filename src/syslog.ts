@@ -13,6 +13,9 @@ const wait = (ms: number) => new Promise(rs => setTimeout(rs, ms));
 
 export type LoggerImpl = (prep: PreparedLog) => void;
 
+const RETRY_CUTOFF = 60_000;
+const RETRY_WAIT = 3_000;
+
 export const createSyslogger = (opts: Options): LoggerImpl => {
     // Holds the client when it is connected. When we detect a disconnect or
     // error, we remove the instance and reconnect on next log line.
@@ -23,14 +26,22 @@ export const createSyslogger = (opts: Options): LoggerImpl => {
     const idleTimeout = opts.idleTimeout || 10_000;
 
     // connect the client.
-    const connectClient = async () => {
+    const connectClient = async (timestamp: Date) => {
         const httpEndpoint = isBrowser ? '/log' : undefined;
-        client = await createClient({
+        const doCreate = () => createClient({
             host: opts.logHost,
             port: opts.logPort,
             httpEndpoint,
             useTls: !opts.disableTls,
             timeout: idleTimeout,
+        });
+        client = await doCreate()
+        .catch(e => {
+            if (Date.now() - timestamp.getTime() > RETRY_CUTOFF) {
+                throw e;
+            } else {
+                return wait(RETRY_WAIT).then(doCreate);
+            }
         });
     };
 
@@ -41,8 +52,15 @@ export const createSyslogger = (opts: Options): LoggerImpl => {
         timestamp: Date,
         message: string,
     ): Promise<void> => {
+        // tslint:disable-next-line:no-let
+        let connectErr = null;
         if (!client || !client.isConnected()) {
-            await connectClient();
+            await connectClient(timestamp).catch(e => {
+                connectErr = e;
+            });
+        }
+        if (connectErr != null) {
+            throw connectErr;
         }
         await client!.send({
             facility,
@@ -79,11 +97,11 @@ export const createSyslogger = (opts: Options): LoggerImpl => {
             logRow
         )
         .catch(e => {
-            if (Date.now() - timestamp.getTime() > 60_000) {
+            if (Date.now() - timestamp.getTime() > RETRY_CUTOFF) {
                 console.warn("Failed to send to syslog server", logRow, e);
                 return;
             } else {
-                return wait(3_000).then(logit);
+                return wait(RETRY_WAIT).then(logit);
             }
         });
 
