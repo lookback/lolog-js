@@ -1,3 +1,4 @@
+import { LogResult } from './syslog';
 export { serializeError } from './prepare';
 /**
  * The overloaded variants of logging.
@@ -183,9 +184,19 @@ export interface Options {
      * If we are to disable tls. This should only be used for unit tests.
      */
     disableTls?: boolean;
+    /**
+     * Milliseconds between retrying a failed syslog connection.
+     */
+    retryWait?: number;
+    /**
+     * Milliseconds when to give up retrying altogether.
+     */
+    retryCutoff?: number;
 }
 export declare const createOptionsFromEnv: () => Pick<Options, "logHost" | "logPort" | "apiKeyId" | "apiKey" | "disableTls">;
 export declare const isOptions: (t: any, reject?: (msg: string) => void) => t is Options;
+/** Exported log result for use in tests. */
+export declare let __lastLogResult: Promise<LogResult> | null;
 /**
  * Create a logger from the options.
  */
