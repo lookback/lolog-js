@@ -17,11 +17,24 @@ export const connectSocket = (copts: ClientOpts): Promise<Transport> => new Prom
 
         // merged params
         const o = { ...basic };
-        if (copts.useTls) {
-            const conn = tls.connect(o, () => rs(conn));
-        } else {
-            const conn = net.createConnection(o, () => rs(conn));
-        }
+
+        // connection via tls or not.
+        const conn = (() => {
+            if (copts.useTls) {
+                return tls.connect(o);
+            } else {
+                return net.connect(o);
+            }
+        })();
+
+        // the non-tls socket events.
+        conn.once('connect', () => rs(conn));
+        conn.once('error', (e: any) => rj(e));
+
+        // the tls events
+        conn.once('secureConnection', () => rs(conn));
+        conn.once('tlsClientError', (e: any) => rj(e));
+
     } catch (e) {
         rj(e);
     }

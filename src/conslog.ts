@@ -8,7 +8,7 @@ export interface Output {
     error(message?: any, ...optionalParams: any[]): void;
 }
 
-export const createConsLogger = (output: Output): LoggerImpl => (prep: PreparedLog) => {
+export const createConsLogger = (output: Output): LoggerImpl => async (prep: PreparedLog) => {
     const { severity, message, merged } = prep;
     const fn = selectFn(output, severity);
     if (merged) {
@@ -16,6 +16,9 @@ export const createConsLogger = (output: Output): LoggerImpl => (prep: PreparedL
     } else {
         fn.call(output, prep.severity, message);
     }
+    return {
+        attempts: 1,
+    };
 };
 
 const selectFn = (output: Output, severity: Severity) => {

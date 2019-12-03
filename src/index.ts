@@ -1,5 +1,5 @@
 import { createConsLogger } from './conslog';
-import { createSyslogger, LoggerImpl } from './syslog';
+import { createSyslogger, LoggerImpl, LogResult } from './syslog';
 import { mkValidator } from './validator';
 import { prepareLog, Severity } from './prepare';
 
@@ -231,6 +231,17 @@ export interface Options {
      * If we are to disable tls. This should only be used for unit tests.
      */
     disableTls?: boolean;
+
+    /**
+     * Milliseconds between retrying a failed syslog connection.
+     */
+    retryWait?: number;
+
+
+    /**
+     * Milliseconds when to give up retrying altogether.
+     */
+    retryCutoff?: number;
 }
 
 const ValidOptions = {
@@ -247,6 +258,8 @@ const ValidOptions = {
     disableUuid: 'boolean',
     idleTimeout: 'number',
     disableTls: 'boolean',
+    retryWait: 'number',
+    retryCutoff: 'number',
 };
 
 export const createOptionsFromEnv = (): Pick<
@@ -276,6 +289,10 @@ export const isOptions: (t: any, reject?: (msg: string) => void) => t is Options
 /** Helper to remove unwanted chars from namespaces */
 const filterNs = (sub: string) => sub.toLowerCase().replace(/[^a-z0-9-]/g, '');
 
+/** Exported log result for use in tests. */
+// tslint:disable-next-line:no-let
+export let __lastLogResult: Promise<LogResult> | null = null;
+
 // create a logger for a namespace
 const mkNnsLogger = (
     syslogger: LoggerImpl | null,
@@ -288,14 +305,14 @@ const mkNnsLogger = (
             const prep = prepareLog(severity, namespace, args);
             if (!prep) return;
             if (conslogger) {
-                conslogger!(prep);
+                __lastLogResult = conslogger!(prep);
             }
             if (syslogger != null &&
                 // never syslog TRACE
                 prep.severity != Severity.Trace &&
                 // only syslog DEBUG if sendDebug flag
                 (prep.severity != Severity.Debug || sendDebug)) {
-                syslogger(prep);
+                __lastLogResult = syslogger(prep);
             }
         };
         return {
