@@ -7,106 +7,85 @@ import {
     createClient,
     Facility,
     SyslogSeverity,
+    SyslogMessage,
 } from './driver';
 
 const wait = (ms: number) => new Promise(rs => setTimeout(rs, ms));
 
-export type LoggerImpl = (prep: PreparedLog) => void;
+export interface LogResult {
+    lastError?: Error;
+    attempts: number;
+}
+export type LoggerImpl = (prep: PreparedLog) => Promise<LogResult>;
 
-const RETRY_CUTOFF = 60_000;
-const RETRY_WAIT = 3_000;
+const DEFAULT_RETRY_WAIT = 3_000;
+const DEFAULT_RETRY_CUTOFF = 60_000;
+
+const makeSender = (opts: Options): ((toSend: SyslogMessage) => Promise<LogResult>) => {
+    const retryWait = opts.retryWait || DEFAULT_RETRY_WAIT;
+    const retryCutoff = opts.retryCutoff || DEFAULT_RETRY_CUTOFF;
+
+    // create a new promise for client.
+    const doCreateClient = () => createClient({
+        host: opts.logHost,
+        port: opts.logPort,
+        httpEndpoint: isBrowser ? '/log' : undefined,
+        useTls: !opts.disableTls,
+        timeout: opts.idleTimeout || 10_000,
+    });
+
+    // Promise for client holds the current client, or currently connecting client.
+    // when failed will result in a reconnect. It's effectively a singleton that ensures
+    // multiple log rows only cause/wait for one single socket connection.
+    // tslint:disable-next-line:no-let
+    let clientPromise: Promise<Client> = doCreateClient();
+
+    // connect the client and send the message.
+    return (toSend: SyslogMessage): Promise<LogResult> => {
+        // we use this for cutoff time for when to give up
+        const timestamp = toSend.timestamp!;
+
+        const doSend = (attempts: number): Promise<LogResult> => clientPromise
+            .then((client: Client) => {
+                return client.send(toSend).then(() => ({
+                    attempts,
+                }));
+            })
+            .catch((e) => {
+                const retryable = Date.now() - timestamp.getTime() < (retryCutoff);
+                if (retryable) {
+                    // replace clientPromise since this one is bust. this will ensure
+                    // only one failed sender will attempt to reconnect.
+                    clientPromise = new Promise((rs, rj) => wait(retryWait)
+                        .then(doCreateClient)
+                        .then(rs)
+                        .catch(rj));
+                    // wait for promise to resolve and try send again.
+                    return doSend(attempts + 1);
+                } else {
+                    // really do abort trying to send this line.
+                    throw {
+                        attempts,
+                        lastError: e,
+                    };
+                }
+            });
+
+        return doSend(1);
+    };
+};
 
 export const createSyslogger = (opts: Options): LoggerImpl => {
-    // Holds the client when it is connected. When we detect a disconnect or
-    // error, we remove the instance and reconnect on next log line.
-    // tslint:disable-next-line:no-let
-    let client: Client | null = null;
-
-    const facility = selectFacility(opts.compliance);
-    const idleTimeout = opts.idleTimeout || 10_000;
-
-    // connect the client.
-    const connectClient = async (timestamp: Date) => {
-        const httpEndpoint = isBrowser ? '/log' : undefined;
-        const doCreate = () => createClient({
-            host: opts.logHost,
-            port: opts.logPort,
-            httpEndpoint,
-            useTls: !opts.disableTls,
-            timeout: idleTimeout,
-        });
-        client = await doCreate()
-        .catch(e => {
-            if (Date.now() - timestamp.getTime() > RETRY_CUTOFF) {
-                throw e;
-            } else {
-                return wait(RETRY_WAIT).then(doCreate);
-            }
-        });
-    };
-
-    const clientLog = async (
-        severity: SyslogSeverity,
-        env: string,
-        appName: string,
-        timestamp: Date,
-        message: string,
-    ): Promise<void> => {
-        // tslint:disable-next-line:no-let
-        let connectErr = null;
-        if (!client || !client.isConnected()) {
-            await connectClient(timestamp).catch(e => {
-                connectErr = e;
-            });
-        }
-        if (connectErr != null) {
-            throw connectErr;
-        }
-        await client!.send({
-            facility,
-            severity,
-            timestamp,
-            message,
-            hostname: opts.host,
-            appName,
-            msgId: !opts.disableUuid ? uuid.v4() : undefined,
-            pid: opts.appVersion || process.pid,
-            apiKeyId: opts.apiKeyId,
-            apiKey: opts.apiKey,
-            tags: {
-                env,
-            },
-        });
-    };
+    // sender that connects/reconnects and sends log rows.
+    const sender = makeSender(opts);
 
     return (prep: PreparedLog) => {
-        // the severity will be mapped to some syslog severity.
-        const syslogSeverity = selectSeverity(prep.severity);
-
-        // the row with the data to log
-        const logRow = prep.merged
-            ? `${prep.message} ${JSON.stringify(prep.merged)}`
-            : prep.message;
-        const timestamp = new Date(prep.timestamp);
-
-        const logit = (): Promise<any> => clientLog(
-            syslogSeverity,
-            opts.env,
-            prep.appName,
-            timestamp,
-            logRow
-        )
-        .catch(e => {
-            if (Date.now() - timestamp.getTime() > RETRY_CUTOFF) {
-                console.warn("Failed to send to syslog server", logRow, e);
-                return;
-            } else {
-                return wait(RETRY_WAIT).then(logit);
-            }
-        });
-
-        // log with retries
-        logit();
+        const toSend = prepToSyslog(prep, opts);
+        return sender(toSend)
+            .catch((e: LogResult) => {
+                console.warn("Failed to send to syslog server", prep, e.lastError);
+                return e;
+            });
     };
 };
 
@@ -127,3 +106,21 @@ const selectSeverity = (s: Severity): SyslogSeverity => {
         case Severity.Error: return SyslogSeverity.Error;
     }
 };
+
+const prepToSyslog = (prep: PreparedLog, opts: Options): SyslogMessage => ({
+    facility: selectFacility(opts.compliance),
+    severity: selectSeverity(prep.severity),
+    timestamp: new Date(prep.timestamp),
+    message: prep.merged
+        ? `${prep.message} ${JSON.stringify(prep.merged)}`
+        : prep.message,
+    hostname: opts.host,
+    appName: prep.appName,
+    msgId: !opts.disableUuid ? uuid.v4() : undefined,
+    pid: opts.appVersion || process.pid,
+    apiKeyId: opts.apiKeyId,
+    apiKey: opts.apiKey,
+    tags: {
+        env: opts.env,
+    },
+});
