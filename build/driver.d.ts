@@ -71,10 +71,6 @@ export declare const rfc5424Row: (msg: SyslogMessage) => string;
  */
 export interface Client {
     /**
-     * Check if client is connected.
-     */
-    isConnected(): boolean;
-    /**
      * Send message to the client. Rejects if the send fails.
      */
     send(msg: SyslogMessage): Promise<void>;
