@@ -20,10 +20,14 @@ export const connectSocket = (copts: ClientOpts): Promise<Transport> => new Prom
 
         // connection via tls or not.
         const conn = (() => {
-            if (copts.useTls) {
-                return tls.connect(o);
-            } else {
-                return net.connect(o);
+            try {
+                if (copts.useTls) {
+                    return tls.connect(o);
+                } else {
+                    return net.connect(o);
+                }
+            } catch (e) {
+                rj(e);
             }
         })();
 

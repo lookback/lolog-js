@@ -114,10 +114,6 @@ const rfc5424Structured = (msg: SyslogMessage): string => {
  */
 export interface Client {
     /**
-     * Check if client is connected.
-     */
-    isConnected(): boolean;
-    /**
      * Send message to the client. Rejects if the send fails.
      */
     send(msg: SyslogMessage): Promise<void>;
@@ -152,13 +148,12 @@ export const createClient = async (copts: ClientOpts): Promise<Client> => {
     });
     if (conn) {
         const disconnect = (e: Error) => {
-            if (lastErr) return; // already disconnected
-            lastErr = e;
-            conn.removeAllListeners();
             try {
                 conn.end();
             } catch (e) {
             }
+            if (lastErr) return; // already disconnected
+            lastErr = e;
         };
         conn.setTimeout(copts.timeout, () => {
             disconnect(new Error('socket timeout'));
@@ -171,7 +166,6 @@ export const createClient = async (copts: ClientOpts): Promise<Client> => {
         });
     }
     return {
-        isConnected: () => !lastErr,
         send: (msg: SyslogMessage): Promise<void> => new Promise((rs, rj) => {
             try {
                 if (lastErr || !conn) {
