@@ -38,6 +38,8 @@ const makeSender = (opts: Options): ((toSend: SyslogMessage) => Promise<LogResul
     // when failed will result in a reconnect. It's effectively a singleton that ensures
     // multiple log rows only cause/wait for one single socket connection.
     // tslint:disable-next-line:no-let
+    let clientPending = true;
+    // tslint:disable-next-line:no-let
     let clientPromise: Promise<Client> = doCreateClient();
 
     // connect the client and send the message.
@@ -47,6 +49,7 @@ const makeSender = (opts: Options): ((toSend: SyslogMessage) => Promise<LogResul
 
         const doSend = (attempts: number): Promise<LogResult> => clientPromise
             .then((client: Client) => {
+                clientPending = false;
                 return client.send(toSend).then(() => ({
                     attempts,
                 }));
@@ -54,12 +57,15 @@ const makeSender = (opts: Options): ((toSend: SyslogMessage) => Promise<LogResul
             .catch((e) => {
                 const retryable = Date.now() - timestamp.getTime() < (retryCutoff);
                 if (retryable) {
-                    // replace clientPromise since this one is bust. this will ensure
-                    // only one failed sender will attempt to reconnect.
-                    clientPromise = new Promise((rs, rj) => wait(retryWait)
-                        .then(doCreateClient)
-                        .then(rs)
-                        .catch(rj));
+                    if (!clientPending) {
+                        clientPending = true;
+                        // replace clientPromise since this one is bust. this will ensure
+                        // only one failed sender will attempt to reconnect.
+                        clientPromise = new Promise((rs, rj) => wait(retryWait)
+                            .then(doCreateClient)
+                            .then(rs)
+                            .catch(rj));
+                    }
                     // wait for promise to resolve and try send again.
                     return doSend(attempts + 1);
                 } else {
