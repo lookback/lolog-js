@@ -64,7 +64,10 @@ const makeSender = (opts: Options): ((toSend: SyslogMessage) => Promise<LogResul
                         clientPromise = new Promise((rs, rj) => wait(retryWait)
                             .then(doCreateClient)
                             .then(rs)
-                            .catch(rj));
+                            .catch(e => {
+                                clientPending = false;
+                                rj(e);
+                            }));
                     }
                     // wait for promise to resolve and try send again.
                     return doSend(attempts + 1);
