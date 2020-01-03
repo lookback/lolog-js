@@ -62,11 +62,18 @@ export interface LocalWellKnown extends WellKnown {
      * for convenience in the lolog-js API.
      */
     timestamp?: number;
+
+    /**
+     * Override the app name for this log row. This is so we can do
+     * `audit.ultron`.
+     */
+    appName?: string;
 }
 
 // keep in sync with interface definition
 const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
     timestamp: 'number',
+    appName: 'string',
     recordingId: 'string',
     userId: 'string',
     userIp: 'string',

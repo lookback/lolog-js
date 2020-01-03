@@ -32,7 +32,7 @@ export interface PreparedLog {
  */
 export const prepareLog = (
     severity: Severity,
-    appName: string,
+    defaultAppName: string,
     args: any[]
 ): PreparedLog | undefined => {
     if (args.length == 0) {
@@ -54,6 +54,9 @@ export const prepareLog = (
 
     const timestamp = (<any>well).timestamp || Date.now();
     delete (<any>well).timestamp;
+
+    const appName = (<any>well).appName || defaultAppName;
+    delete (<any>well).appName;
 
     const dataLen = Object.keys(data).length;
     const mergaroo: { [key: string]: any } = { ...well, ...(dataLen ? { data } : {}) };
