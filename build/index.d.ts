@@ -49,6 +49,11 @@ export interface LocalWellKnown extends WellKnown {
      * for convenience in the lolog-js API.
      */
     timestamp?: number;
+    /**
+     * Override the app name for this log row. This is so we can do
+     * `audit.ultron`.
+     */
+    appName?: string;
 }
 /**
  * Check if the given argument is a `LogWellKnown`. Every single field must be well known.

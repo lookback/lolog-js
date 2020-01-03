@@ -23,7 +23,7 @@ export interface PreparedLog {
 /**
  * Helper to prepare a log message, rejecting it if it's not well formed.
  */
-export declare const prepareLog: (severity: Severity, appName: string, args: any[]) => PreparedLog | undefined;
+export declare const prepareLog: (severity: Severity, defaultAppName: string, args: any[]) => PreparedLog | undefined;
 export interface SerializedError {
     name: string;
     message: string;
