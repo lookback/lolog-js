@@ -10,7 +10,7 @@ export const mkValidator = <T>(validator: Validator, required?: string[]) => {
         for (const f of Object.keys(t)) {
             const type = validator[f];
             if (!type) {
-                reject && reject(`${f} is not an expected field`);
+                reject && reject(`${f} is not an expected field in ${JSON.stringify(t)}`);
                 return false;
             }
             if ((typeof t[f]) !== type) {
