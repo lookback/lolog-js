@@ -125,8 +125,8 @@ export declare enum Compliance {
      */
     Mid = "mid",
     /**
-     * For services that have just been converted. Nothing is forwarded to our log web UI.
-     * They are available via SSH on the log ingester.
+     * For services that have just been converted. Logs are forwarded to our log web UI
+     * and treated as plain text messages.
      *
      * Use syslog facility `local2`
      */
