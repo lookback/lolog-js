@@ -3,6 +3,7 @@
 import { test } from 'loltest';
 import { createVoidLogger, createProxyLogger } from '../src';
 import assert from 'assert';
+import { createMockLogger } from './_mock_logger';
 
 test('create proxy', () => {
     const target = createVoidLogger();
@@ -31,4 +32,17 @@ test('switch proxy', () => {
     logger.trace('hello world');
     assert.deepEqual(foo1, null);
     assert.deepEqual(foo2, 'hello world');
+});
+
+test('create proxy sublogger', async () => {
+    const { msg, log } = await createMockLogger();
+    const logger = createProxyLogger(log);
+    const sublog = logger.sublogger('live-player');
+    sublog.info('hello world', <any>{ timestamp: 1547104969669 });
+    const m = await msg;
+    assert.deepEqual(
+        m,
+        `<134>1 2019-01-10T07:22:49.669Z testhost test-app.live-player 2.11` +
+            ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`
+    );
 });
