@@ -35,9 +35,13 @@ test('switch proxy', () => {
 });
 
 test('create proxy sublogger', async () => {
-    const { msg, log } = await createMockLogger();
-    const logger = createProxyLogger(log);
+    // a common scenario is to have a voidLogger during init and then
+    // alter the proxy target later.
+    const voidLog = createVoidLogger();
+    const logger = createProxyLogger(voidLog);
     const sublog = logger.sublogger('live-player');
+    const { msg, log } = await createMockLogger();
+    logger.setProxyTarget(log);
     sublog.info('hello world', <any>{ timestamp: 1547104969669 });
     const m = await msg;
     assert.deepEqual(

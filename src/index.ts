@@ -386,16 +386,27 @@ export interface ProxyLogger extends Logger {
 export const createProxyLogger = (target: Logger): ProxyLogger => {
     // tslint:disable-next-line:no-let
     let t = target;
+    const subloggers: { [sub: string]: ProxyLogger } = {};
     return {
         trace: (...args: any[]) => t.trace.apply(t, args),
         debug: (...args: any[]) => t.debug.apply(t, args),
         info: (...args: any[]) => t.info.apply(t, args),
         warn: (...args: any[]) => t.warn.apply(t, args),
         error: (...args: any[]) => t.error.apply(t, args),
-        sublogger: (sub: string) => t.sublogger.call(t, sub),
+        sublogger: (sub: string) => {
+            const actual = t.sublogger.call(t, sub);
+            const proxy = createProxyLogger(actual);
+            // tslint:disable-next-line: no-object-mutation
+            subloggers[sub] = proxy;
+            return proxy;
+        },
         setDebug: (debug: boolean) => t.setDebug.call(t, debug),
         setProxyTarget(target: Logger): void {
             t = target;
+            Object.entries(subloggers).forEach(([sub, logger]) => {
+                const newSub = target.sublogger(sub);
+                logger.setProxyTarget(newSub);
+            });
         },
     };
 };
