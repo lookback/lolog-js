@@ -394,6 +394,10 @@ export const createProxyLogger = (target: Logger): ProxyLogger => {
         warn: (...args: any[]) => t.warn.apply(t, args),
         error: (...args: any[]) => t.error.apply(t, args),
         sublogger: (sub: string) => {
+            const existing = subloggers[sub];
+            if (existing) {
+                return existing;
+            }
             const actual = t.sublogger.call(t, sub);
             const proxy = createProxyLogger(actual);
             // tslint:disable-next-line: no-object-mutation

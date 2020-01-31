@@ -50,3 +50,20 @@ test('create proxy sublogger', async () => {
             ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`
     );
 });
+
+test('create proxy sublogger with same name', async () => {
+    const voidLog = createVoidLogger();
+    const logger = createProxyLogger(voidLog);
+    const sublog1 = logger.sublogger('live-player');
+    // risk that this overwrites the first sublogger
+    logger.sublogger('live-player');
+    const { msg, log } = await createMockLogger();
+    logger.setProxyTarget(log);
+    sublog1.info('hello world', <any>{ timestamp: 1547104969669 });
+    const m = await msg;
+    assert.deepEqual(
+        m,
+        `<134>1 2019-01-10T07:22:49.669Z testhost test-app.live-player 2.11` +
+            ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`
+    );
+});
