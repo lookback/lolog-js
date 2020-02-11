@@ -147,9 +147,7 @@ export const createClient = async (copts: ClientOpts): Promise<Client> => {
         return null;
     });
     if (conn) {
-        console.log('Syslog new socket connected.');
         const disconnect = (e: Error) => {
-            console.log(`Syslog socket disconnect: ${e.message}`);
             try {
                 conn.end();
             } catch (e) {
