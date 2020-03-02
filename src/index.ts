@@ -37,6 +37,11 @@ export interface WellKnown {
     userId?: string;
 
     /**
+     * Team id.
+     */
+    teamId?: string;
+
+    /**
      * Ip address of user in question. Be very restrictive with logging this.
      */
     userIp?: string;
@@ -76,6 +81,7 @@ const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
     appName: 'string',
     recordingId: 'string',
     userId: 'string',
+    teamId: 'string',
     userIp: 'string',
     sessionId: 'string',
 };
