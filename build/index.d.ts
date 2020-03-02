@@ -30,6 +30,10 @@ export interface WellKnown {
      */
     userId?: string;
     /**
+     * Team id.
+     */
+    teamId?: string;
+    /**
      * Ip address of user in question. Be very restrictive with logging this.
      */
     userIp?: string;
