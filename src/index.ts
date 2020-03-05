@@ -55,6 +55,12 @@ export interface WellKnown {
      */
     sessionId?: string;
 
+    /**
+     * Numeric values under the `data: {}` section are treated as metrics belonging
+     * to this metric group.
+     */
+    metricGroup?: string;
+
     //
     // consult process to add more fields here.
     //
@@ -84,6 +90,7 @@ const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
     teamId: 'string',
     userIp: 'string',
     sessionId: 'string',
+    metricGroup: 'string',
 };
 
 /**
