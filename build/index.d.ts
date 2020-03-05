@@ -45,6 +45,11 @@ export interface WellKnown {
      * would cause different sessionId.
      */
     sessionId?: string;
+    /**
+     * Numeric values under the `data: {}` section are treated as metrics belonging
+     * to this metric group.
+     */
+    metricGroup?: string;
 }
 export interface LocalWellKnown extends WellKnown {
     /**
