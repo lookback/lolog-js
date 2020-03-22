@@ -63,6 +63,10 @@ export interface LocalWellKnown extends WellKnown {
      * `audit.ultron`.
      */
     appName?: string;
+    /**
+     * Disable console log for this message. Useful for telemetry etc.
+     */
+    disableConsole?: boolean;
 }
 /**
  * Check if the given argument is a `LogWellKnown`. Every single field must be well known.

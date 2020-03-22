@@ -19,6 +19,7 @@ export interface PreparedLog {
     merged?: {
         [key: string]: any;
     };
+    disableConsole: boolean;
 }
 /**
  * Helper to prepare a log message, rejecting it if it's not well formed.
