@@ -24,6 +24,7 @@ export interface PreparedLog {
     timestamp: number;
     message: string;
     merged?: { [key: string]: any };
+    disableConsole: boolean;
 }
 
 
@@ -47,7 +48,7 @@ export const prepareLog = (
     const well = filterUnwanted(wellRaw);
     const data = filterUnwanted(dataRaw);
 
-    // ensure well know really only contains well known fields
+    // ensure wellknown really only contains well known fields
     if (!isWellKnown(well, (msg) => console.log('Ignoring log row:', msg))) {
         return;
     }
@@ -57,6 +58,9 @@ export const prepareLog = (
 
     const appName = (<any>well).appName || defaultAppName;
     delete (<any>well).appName;
+
+    const disableConsole = !!(<any>well).disableConsole;
+    delete (<any>well).disableConsole;
 
     const dataLen = Object.keys(data).length;
     const mergaroo: { [key: string]: any } = { ...well, ...(dataLen ? { data } : {}) };
@@ -69,6 +73,7 @@ export const prepareLog = (
         appName,
         message,
         merged,
+        disableConsole,
     };
 };
 

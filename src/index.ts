@@ -79,6 +79,11 @@ export interface LocalWellKnown extends WellKnown {
      * `audit.ultron`.
      */
     appName?: string;
+
+    /**
+     * Disable console log for this message. Useful for telemetry etc.
+     */
+    disableConsole?: boolean;
 }
 
 // keep in sync with interface definition
@@ -91,6 +96,7 @@ const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
     userIp: 'string',
     sessionId: 'string',
     metricGroup: 'string',
+    disableConsole: 'boolean',
 };
 
 /**
@@ -324,7 +330,7 @@ const mkNnsLogger = (
         const doLog = (severity: Severity, args: any[]) => {
             const prep = prepareLog(severity, namespace, args);
             if (!prep) return;
-            if (conslogger) {
+            if (conslogger && !prep.disableConsole) {
                 __lastLogResult = conslogger!(prep);
             }
             if (syslogger != null &&
