@@ -111,6 +111,10 @@ export interface Logger {
      */
     sublogger: (subname: string) => Logger;
     /**
+     * Create a new root logger that will start a new namespace.  Limited to `/[a-z0-9-]+/`.
+     */
+    rootLogger: (appName: string) => Logger;
+    /**
      * Enable sending debug level logs to the log host for this logger. The default
      * is to only send INFO level and above. DEBUG can be enabled while finding an error.
      * TRACE is only ever logged to console.
