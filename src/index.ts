@@ -150,6 +150,11 @@ export interface Logger {
     sublogger: (subname: string) => Logger;
 
     /**
+     * Create a new root logger that will start a new namespace.  Limited to `/[a-z0-9-]+/`.
+     */
+    rootLogger: (appName: string) => Logger;
+
+    /**
      * Enable sending debug level logs to the log host for this logger. The default
      * is to only send INFO level and above. DEBUG can be enabled while finding an error.
      * TRACE is only ever logged to console.
@@ -348,6 +353,7 @@ const mkNnsLogger = (
             warn: (...args: any[]) => doLog(Severity.Warn, args),
             error: (...args: any[]) => doLog(Severity.Error, args),
             sublogger: (sub: string) => nsLogger(`${namespace}.${filterNs(sub)}`),
+            rootLogger: (appName: string) => nsLogger(filterNs(appName)),
             setDebug: (debug: boolean) => {
                 sendDebug = debug;
             },
@@ -405,7 +411,17 @@ export interface ProxyLogger extends Logger {
 export const createProxyLogger = (target: Logger): ProxyLogger => {
     // tslint:disable-next-line:no-let
     let t = target;
-    const subloggers: { [sub: string]: ProxyLogger } = {};
+    const dependent: { [sub: string]: ProxyLogger } = {};
+    const createDependent = (n: string, actual: Logger): ProxyLogger => {
+        const existing = dependent[n];
+        if (existing) {
+            return existing;
+        }
+        const proxy = createProxyLogger(actual);
+        // tslint:disable-next-line: no-object-mutation
+        dependent[n] = proxy;
+        return proxy;
+    };
     return {
         trace: (...args: any[]) => t.trace.apply(t, args),
         debug: (...args: any[]) => t.debug.apply(t, args),
@@ -413,22 +429,21 @@ export const createProxyLogger = (target: Logger): ProxyLogger => {
         warn: (...args: any[]) => t.warn.apply(t, args),
         error: (...args: any[]) => t.error.apply(t, args),
         sublogger: (sub: string) => {
-            const existing = subloggers[sub];
-            if (existing) {
-                return existing;
-            }
             const actual = t.sublogger.call(t, sub);
-            const proxy = createProxyLogger(actual);
-            // tslint:disable-next-line: no-object-mutation
-            subloggers[sub] = proxy;
-            return proxy;
+            return createDependent(sub, actual);
+        },
+        rootLogger: (appName: string) => {
+            const actual = t.rootLogger.call(t, appName);
+            return createDependent(`ROOT_${appName}`, actual);
         },
         setDebug: (debug: boolean) => t.setDebug.call(t, debug),
         setProxyTarget(target: Logger): void {
             t = target;
-            Object.entries(subloggers).forEach(([sub, logger]) => {
-                const newSub = target.sublogger(sub);
-                logger.setProxyTarget(newSub);
+            Object.entries(dependent).forEach(([n, logger]) => {
+                const newDep = n.startsWith('ROOT_')
+                    ? target.rootLogger(n.substring(5))
+                    : target.sublogger(n);
+                logger.setProxyTarget(newDep);
             });
         },
     };

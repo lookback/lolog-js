@@ -67,3 +67,20 @@ test('create proxy sublogger with same name', async () => {
             ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`
     );
 });
+
+test('create proxy rootLogger', async () => {
+    // a common scenario is to have a voidLogger during init and then
+    // alter the proxy target later.
+    const voidLog = createVoidLogger();
+    const logger = createProxyLogger(voidLog);
+    const sublog = logger.rootLogger('live-player');
+    const { msg, log } = await createMockLogger();
+    logger.setProxyTarget(log);
+    sublog.info('hello world', <any>{ timestamp: 1547104969669 });
+    const m = await msg;
+    assert.deepEqual(
+        m,
+        `<134>1 2019-01-10T07:22:49.669Z testhost live-player 2.11` +
+            ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`
+    );
+});
