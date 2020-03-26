@@ -1,5 +1,6 @@
 import { LoggerImpl } from './syslog';
 import { PreparedLog, Severity } from './prepare';
+import isBrowser from 'is-browser';
 
 export interface Output {
     debug(message?: any, ...optionalParams: any[]): void;
@@ -12,7 +13,15 @@ export const createConsLogger = (output: Output): LoggerImpl => async (prep: Pre
     const { severity, message, merged } = prep;
     const fn = selectFn(output, severity);
     if (merged) {
-        fn.call(output, prep.severity, message, merged);
+        if (isBrowser) {
+            fn.call(output, prep.severity, message, merged);
+        } else {
+            const mergedFormat =  require('util').inspect(merged, {
+                compact: false,
+                breakLength: 16,
+            }, 1000);
+            fn.call(output, prep.severity, message, mergedFormat);
+        }
     } else {
         fn.call(output, prep.severity, message);
     }
