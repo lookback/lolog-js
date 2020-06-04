@@ -2,6 +2,10 @@ import { createConsLogger } from './conslog';
 import { createSyslogger, LoggerImpl, LogResult } from './syslog';
 import { mkValidator } from './validator';
 import { prepareLog, Severity } from './prepare';
+import { Compliance } from './compliance';
+
+export { isWellKnown } from './is-well-known';
+export { Compliance } from './compliance';
 
 export { serializeError } from './prepare';
 
@@ -86,25 +90,6 @@ export interface LocalWellKnown extends WellKnown {
     disableConsole?: boolean;
 }
 
-// keep in sync with interface definition
-const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
-    timestamp: 'number',
-    appName: 'string',
-    recordingId: 'string',
-    userId: 'string',
-    teamId: 'string',
-    userIp: 'string',
-    sessionId: 'string',
-    metricGroup: 'string',
-    disableConsole: 'boolean',
-};
-
-/**
- * Check if the given argument is a `LogWellKnown`. Every single field must be well known.
- */
-export const isWellKnown: (t: any, reject?: (msg: string) => void) => t is WellKnown
-    = mkValidator(WellKnown);
-
 /**
  * Logging instance.
  */
@@ -162,35 +147,6 @@ export interface Logger {
      * Notice that this only toggles the current logger, not any subloggers.
      */
     setDebug: (debug: boolean) => void;
-}
-
-/**
- * The level of compliance with our defined log levels.
- */
-export enum Compliance {
-    /**
-     * For services that fully adhere to our levels. An `ERROR` level event means waking
-     * up who is on call in the middle of the night. Logs are forwarded to our log web UI.
-     *
-     * Use syslog facility `local0`
-     */
-    Full = 'full',
-
-    /**
-     * For services that are somewhat compliant with the log levels. An `ERROR` level event
-     * is not going to wake anyone up. Logs are forwarded to our log web UI.
-     *
-     * Use syslog facility `local1`
-     */
-    Mid = 'mid',
-
-    /**
-     * For services that have just been converted. Logs are forwarded to our log web UI
-     * and treated as plain text messages.
-     *
-     * Use syslog facility `local2`
-     */
-    None = 'none',
 }
 
 /**

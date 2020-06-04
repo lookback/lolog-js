@@ -1,6 +1,6 @@
 import isBrowser from 'is-browser';
 import uuid from 'uuid';
-import { Compliance, Options } from '.';
+import { Options } from '.';
 import { PreparedLog, Severity } from './prepare';
 import {
     Client,
@@ -9,6 +9,7 @@ import {
     SyslogSeverity,
     SyslogMessage,
 } from './driver';
+import { Compliance } from './compliance';
 
 const wait = (ms: number) => new Promise(rs => setTimeout(rs, ms));
 
