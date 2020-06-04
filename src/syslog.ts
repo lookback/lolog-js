@@ -1,5 +1,4 @@
 import isBrowser from 'is-browser';
-import uuid from 'uuid';
 import { Options } from '.';
 import { PreparedLog, Severity } from './prepare';
 import {
@@ -126,7 +125,7 @@ const prepToSyslog = (prep: PreparedLog, opts: Options): SyslogMessage => ({
         : prep.message,
     hostname: opts.host,
     appName: prep.appName,
-    msgId: !opts.disableUuid ? uuid.v4() : undefined,
+    msgId: !opts.disableUuid ? randomId(24) : undefined,
     pid: opts.appVersion || process.pid,
     apiKeyId: opts.apiKeyId,
     apiKey: opts.apiKey,
@@ -134,3 +133,14 @@ const prepToSyslog = (prep: PreparedLog, opts: Options): SyslogMessage => ({
         env: opts.env,
     },
 });
+
+/** Deliberately not including easily confusable chars, 0, O, l, 1 etc */
+const RANDOM_CHARS = 'abcdefghjkmnpqrstuvxyzABCDEFGHJKLMNPQRSTUVXYZ23456789';
+
+/** Generate a mongo friendly random id */
+export const randomId = (length: number = 17): string =>
+    Array.apply(null, { length })
+        .map(
+            () => RANDOM_CHARS[Math.floor(Math.random() * RANDOM_CHARS.length)]
+        )
+        .join('');

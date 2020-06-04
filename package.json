@@ -13,8 +13,7 @@
     "lint": "tslint --project ."
   },
   "dependencies": {
-    "is-browser": "^2.1.0",
-    "uuid": "^3.3.3"
+    "is-browser": "^2.1.0"
   },
   "devDependencies": {
     "@types/node": "^12.12.14",
