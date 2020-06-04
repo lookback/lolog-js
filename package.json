@@ -12,9 +12,7 @@
     "watch": "tsc -w",
     "lint": "tslint --project ."
   },
-  "dependencies": {
-    "is-browser": "^2.1.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/node": "^12.12.14",
     "@types/uuid": "^3.4.6",

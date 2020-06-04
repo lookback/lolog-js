@@ -1,6 +1,6 @@
 import { LoggerImpl } from './syslog';
 import { PreparedLog, Severity } from './prepare';
-import isBrowser from 'is-browser';
+import { isBrowser } from './is-browser';
 
 export interface Output {
     debug(message?: any, ...optionalParams: any[]): void;
@@ -13,7 +13,7 @@ export const createConsLogger = (output: Output): LoggerImpl => async (prep: Pre
     const { severity, message, merged } = prep;
     const fn = selectFn(output, severity);
     if (merged) {
-        if (process.env.IS_BROWSER || isBrowser) {
+        if (isBrowser) {
             fn.call(output, prep.severity, message, merged);
         } else {
             const util = require('util');

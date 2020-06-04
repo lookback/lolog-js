@@ -1,4 +1,3 @@
-import isBrowser from 'is-browser';
 import { Options } from '.';
 import { PreparedLog, Severity } from './prepare';
 import {
@@ -9,6 +8,7 @@ import {
     SyslogMessage,
 } from './driver';
 import { Compliance } from './compliance';
+import { isBrowser } from './is-browser';
 
 const wait = (ms: number) => new Promise(rs => setTimeout(rs, ms));
 
