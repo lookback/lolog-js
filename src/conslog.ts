@@ -13,7 +13,7 @@ export const createConsLogger = (output: Output): LoggerImpl => async (prep: Pre
     const { severity, message, merged } = prep;
     const fn = selectFn(output, severity);
     if (merged) {
-        if (isBrowser) {
+        if (process.env.IS_BROWSER || isBrowser) {
             fn.call(output, prep.severity, message, merged);
         } else {
             const util = require('util');

@@ -2,13 +2,14 @@
   "name": "lolog",
   "version": "1.2.1",
   "description": "Lookback Log",
-  "main": "build/index.js",
+  "main": "build/cjs/index.js",
+  "module": "build/es/index.js",
   "types": "build/index.d.ts",
   "author": "Martin Algesten",
   "private": true,
   "scripts": {
     "test": "npm run lint && loltest",
-    "build": "tsc && browserify -r ./build/index.js:lolog ./build/index.js> ./lolog.js",
+    "build": "tsc && tsc --module esnext --outDir build/es && browserify -r ./build/cjs/index.js:lolog ./build/cjs/index.js> ./lolog.js",
     "watch": "tsc -w",
     "lint": "tslint --project ."
   },
