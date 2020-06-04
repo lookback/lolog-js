@@ -4,7 +4,6 @@
   "description": "Lookback Log",
   "main": "build/cjs/index.js",
   "module": "build/es/index.js",
-  "types": "build/index.d.ts",
   "author": "Martin Algesten",
   "private": true,
   "scripts": {
