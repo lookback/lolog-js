@@ -6,3 +6,5 @@ export interface LogResult {
 }
 export declare type LoggerImpl = (prep: PreparedLog) => Promise<LogResult>;
 export declare const createSyslogger: (opts: Options) => LoggerImpl;
+/** Generate a mongo friendly random id */
+export declare const randomId: (length?: number) => string;
