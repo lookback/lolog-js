@@ -3,10 +3,9 @@ import { ClientOpts, Transport } from './driver';
 /**
  * Create a (nodejs) TCP/TLS socket to send syslog messages over.
  */
-export const connectSocket = (copts: ClientOpts): Promise<Transport> =>
-    new Promise(async (rs, rj) => {
-    const net = await import('net');
-    const tls = await import('tls');
+export const connectSocket = (copts: ClientOpts): Promise<Transport> => new Promise((rs, rj) => {
+    const net = require('net');
+    const tls = require('tls');
     const family = net.isIPv6(copts.host) ? 6 : 4;
     try {
         // options for all things
