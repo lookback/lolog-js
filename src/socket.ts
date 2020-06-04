@@ -3,9 +3,10 @@ import { ClientOpts, Transport } from './driver';
 /**
  * Create a (nodejs) TCP/TLS socket to send syslog messages over.
  */
-export const connectSocket = (copts: ClientOpts): Promise<Transport> => new Promise((rs, rj) => {
-    const net = require('net');
-    const tls = require('tls');
+export const connectSocket = (copts: ClientOpts): Promise<Transport> =>
+    new Promise(async (rs, rj) => {
+    const net = await import('net');
+    const tls = await import('tls');
     const family = net.isIPv6(copts.host) ? 6 : 4;
     try {
         // options for all things
@@ -19,24 +20,14 @@ export const connectSocket = (copts: ClientOpts): Promise<Transport> => new Prom
         const o = { ...basic };
 
         // connection via tls or not.
-        const conn = (() => {
-            try {
-                if (copts.useTls) {
-                    return tls.connect(o);
-                } else {
-                    return net.connect(o);
-                }
-            } catch (e) {
-                rj(e);
-            }
-        })();
+        const conn = copts.useTls ? tls.connect(o) : net.connect(o);
 
         // the non-tls socket events.
-        conn.once('connect', () => rs(conn));
+        conn.once('connect', () => rs(conn as Transport));
         conn.once('error', (e: any) => rj(e));
 
         // the tls events
-        conn.once('secureConnection', () => rs(conn));
+        conn.once('secureConnection', () => rs(conn as Transport));
         conn.once('tlsClientError', (e: any) => rj(e));
 
     } catch (e) {

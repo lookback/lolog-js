@@ -16,11 +16,13 @@ export const createConsLogger = (output: Output): LoggerImpl => async (prep: Pre
         if (isBrowser) {
             fn.call(output, prep.severity, message, merged);
         } else {
-            const mergedFormat =  require('util').inspect(merged, {
+            const util = await import('util');
+            const mergedFormat =  util.inspect(merged, {
                 compact: false,
                 colors: true,
                 breakLength: 16,
-            }, 1000);
+                depth: 1000,
+            });
             fn.call(output, prep.severity, message, mergedFormat);
         }
     } else {
