@@ -1,17 +1,22 @@
 {
-  "name": "lolog",
+  "name": "@lookback/lolog",
   "version": "1.2.7",
   "description": "Lookback Log",
   "main": "build/cjs/index.js",
   "module": "build/es/index.js",
   "author": "Martin Algesten",
-  "private": true,
   "scripts": {
     "test": "npm run lint && loltest",
+    "prebuild": "npm run clean",
     "build": "tsc && tsc --module esnext --outDir build/es && browserify -r ./build/cjs/index.js:lolog ./build/cjs/index.js> ./lolog.js",
     "watch": "tsc -w",
-    "lint": "tslint --project ."
+    "lint": "tslint --project .",
+    "clean": "rm -rf build",
+    "prepublish": "npm run build"
   },
+  "files": [
+    "build"
+  ],
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^12.12.14",
