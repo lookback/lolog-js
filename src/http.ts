@@ -17,7 +17,6 @@ export const connectHttp = (endpoint: string) =>
         // messages that are to be sent.
         const todo: Todo[] = [];
 
-        // tslint:disable-next-line:no-let
         let send_timeout: any = null;
 
         // schedules a doSend 10_000 from a given from time.

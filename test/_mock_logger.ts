@@ -12,7 +12,6 @@ const FORCE_DISCONNECT = new Error("Force disconnect as part of test");
 const mockSyslogServer = (opts: MockServerOpts = {}) =>
   new Promise<{ port: number, msg: Promise<string> }>(resolvePort => {
     const msg = new Promise<string>((resolveMsg, rejectMsg) => {
-        // tslint:disable-next-line:no-let
         let firstDisconnected = false;
         const server = net.createServer(c => {
             c.on('error', (e) => {

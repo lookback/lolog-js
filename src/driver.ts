@@ -138,7 +138,6 @@ export interface ClientOpts {
  * Create a syslog client from the given options.
  */
 export const createClient = async (copts: ClientOpts): Promise<Client> => {
-    // tslint:disable-next-line: no-let
     let connectSocket: () => Promise<Transport>;
     if (process.env.IS_BROWSER) {
         connectSocket = <any>{};
@@ -147,7 +146,7 @@ export const createClient = async (copts: ClientOpts): Promise<Client> => {
         connectSocket = c;
     }
     const connect = copts.httpEndpoint ? connectHttp(copts.httpEndpoint) : connectSocket;
-    // tslint:disable-next-line:no-let
+
     let lastErr: Error | undefined = undefined;
     const conn = await connect(copts).catch(e => {
         lastErr = e;

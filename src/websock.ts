@@ -16,12 +16,10 @@ export const connectWebsocket = (copts: ClientOpts): Promise<Transport> => new P
     try {
         const ws = new WebSocket(url);
 
-        // tslint:disable-next-line:no-let
         let timeout = {
             ms: 0,
             cb: () => { },
         };
-        // tslint:disable-next-line:no-let
         let timer = setTimeout(() => { }, 0);
 
         // reset the timeout to happen later

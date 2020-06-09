@@ -37,9 +37,7 @@ const makeSender = (opts: Options): ((toSend: SyslogMessage) => Promise<LogResul
     // Promise for client holds the current client, or currently connecting client.
     // when failed will result in a reconnect. It's effectively a singleton that ensures
     // multiple log rows only cause/wait for one single socket connection.
-    // tslint:disable-next-line:no-let
     let clientPending = true;
-    // tslint:disable-next-line:no-let
     let clientPromise: Promise<Client> = doCreateClient();
 
     // connect the client and send the message.

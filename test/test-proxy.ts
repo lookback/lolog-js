@@ -1,5 +1,3 @@
-// tslint:disable
-
 import { test } from 'loltest';
 import { createVoidLogger, createProxyLogger } from '../src';
 import assert from 'assert';

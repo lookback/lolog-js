@@ -6,11 +6,10 @@
   "module": "build/es/index.js",
   "author": "Martin Algesten",
   "scripts": {
-    "test": "npm run lint && loltest",
+    "test": "loltest",
     "prebuild": "npm run clean",
     "build": "tsc && tsc --module esnext --outDir build/es && browserify -r ./build/cjs/index.js:lolog ./build/cjs/index.js> ./lolog.js",
     "watch": "tsc -w",
-    "lint": "tslint --project .",
     "clean": "rm -rf build",
     "prepublish": "npm run build"
   },
@@ -24,8 +23,6 @@
     "browserify": "^16.5.0",
     "loltest": "github:lookback/loltest#1.1.1",
     "ts-node": "^8.5.4",
-    "tslint": "^5.20.1",
-    "tslint-immutable": "^6",
     "typescript": "^3.7.2"
   }
 }

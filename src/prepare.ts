@@ -1,6 +1,5 @@
 import { isPlainObject } from './is-plain-object';
 import { isWellKnown } from './is-well-known';
-// tslint:disable no-object-mutation
 
 
 /**

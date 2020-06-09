@@ -277,7 +277,6 @@ export const isOptions: (t: any, reject?: (msg: string) => void) => t is Options
 const filterNs = (sub: string) => sub.toLowerCase().replace(/[^a-z0-9-]/g, '');
 
 /** Exported log result for use in tests. */
-// tslint:disable-next-line:no-let
 export let __lastLogResult: Promise<LogResult> | null = null;
 
 // create a logger for a namespace
@@ -286,7 +285,6 @@ const mkNnsLogger = (
     conslogger: LoggerImpl | null,
 ) => {
     const nsLogger = (namespace: string) => {
-        // tslint:disable-next-line:no-let
         let sendDebug = false;
         const doLog = (severity: Severity, args: any[]) => {
             const prep = prepareLog(severity, namespace, args);
@@ -365,7 +363,6 @@ export interface ProxyLogger extends Logger {
  * Create a logger that proxies to another logger.
  */
 export const createProxyLogger = (target: Logger): ProxyLogger => {
-    // tslint:disable-next-line:no-let
     let t = target;
     const dependent: { [sub: string]: ProxyLogger } = {};
     const createDependent = (n: string, actual: Logger): ProxyLogger => {
@@ -374,7 +371,6 @@ export const createProxyLogger = (target: Logger): ProxyLogger => {
             return existing;
         }
         const proxy = createProxyLogger(actual);
-        // tslint:disable-next-line: no-object-mutation
         dependent[n] = proxy;
         return proxy;
     };
