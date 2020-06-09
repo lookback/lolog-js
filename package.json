@@ -11,7 +11,7 @@
     "build": "tsc && tsc --module esnext --outDir build/es && browserify -r ./build/cjs/index.js:lolog ./build/cjs/index.js> ./lolog.js",
     "watch": "tsc -w",
     "clean": "rm -rf build",
-    "prepublish": "npm run build"
+    "prepublishOnly": "npm run build"
   },
   "files": [
     "build"
