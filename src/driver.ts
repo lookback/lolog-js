@@ -1,4 +1,5 @@
 import { connectHttp } from './http';
+import { isBrowser } from './is-browser';
 
 /**
  * Facility numbers according to spec.
@@ -139,7 +140,7 @@ export interface ClientOpts {
  */
 export const createClient = async (copts: ClientOpts): Promise<Client> => {
     let connectSocket: () => Promise<Transport>;
-    if (process.env.IS_BROWSER) {
+    if (isBrowser) {
         connectSocket = <any>{};
     } else {
         const { connectSocket: c } = require('./socket');
