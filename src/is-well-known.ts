@@ -1,5 +1,5 @@
-import { mkValidator } from "./validator";
-import { WellKnown } from ".";
+import { mkValidator } from './validator';
+import { WellKnown } from '.';
 
 // keep in sync with interface definition
 const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
@@ -17,5 +17,4 @@ const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
 /**
  * Check if the given argument is a `LogWellKnown`. Every single field must be well known.
  */
-export const isWellKnown: (t: any, reject?: (msg: string) => void) => t is WellKnown
-    = mkValidator(WellKnown);
+export const isWellKnown: (t: any, reject?: (msg: string) => void) => t is WellKnown = mkValidator(WellKnown);

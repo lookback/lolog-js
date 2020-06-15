@@ -224,7 +224,6 @@ export interface Options {
      */
     retryWait?: number;
 
-
     /**
      * Milliseconds when to give up retrying altogether.
      */
@@ -268,10 +267,16 @@ const getEnv = (n: string): string => {
     return x;
 };
 
-export const isOptions: (t: any, reject?: (msg: string) => void) => t is Options
-    = mkValidator(ValidOptions, [
-        'logHost', 'logPort', 'host', 'appName', 'compliance', 'apiKeyId', 'apiKey', 'env',
-    ]);
+export const isOptions: (t: any, reject?: (msg: string) => void) => t is Options = mkValidator(ValidOptions, [
+    'logHost',
+    'logPort',
+    'host',
+    'appName',
+    'compliance',
+    'apiKeyId',
+    'apiKey',
+    'env',
+]);
 
 /** Helper to remove unwanted chars from namespaces */
 const filterNs = (sub: string) => sub.toLowerCase().replace(/[^a-z0-9-]/g, '');
@@ -280,10 +285,7 @@ const filterNs = (sub: string) => sub.toLowerCase().replace(/[^a-z0-9-]/g, '');
 export let __lastLogResult: Promise<LogResult> | null = null;
 
 // create a logger for a namespace
-const mkNnsLogger = (
-    syslogger: LoggerImpl | null,
-    conslogger: LoggerImpl | null,
-) => {
+const mkNnsLogger = (syslogger: LoggerImpl | null, conslogger: LoggerImpl | null) => {
     const nsLogger = (namespace: string) => {
         let sendDebug = false;
         const doLog = (severity: Severity, args: any[]) => {
@@ -292,11 +294,13 @@ const mkNnsLogger = (
             if (conslogger && !prep.disableConsole) {
                 __lastLogResult = conslogger!(prep);
             }
-            if (syslogger != null &&
+            if (
+                syslogger != null &&
                 // never syslog TRACE
                 prep.severity != Severity.Trace &&
                 // only syslog DEBUG if sendDebug flag
-                (prep.severity != Severity.Debug || sendDebug)) {
+                (prep.severity != Severity.Debug || sendDebug)
+            ) {
                 __lastLogResult = syslogger(prep);
             }
         };
@@ -320,7 +324,6 @@ const mkNnsLogger = (
  * Create a logger from the options.
  */
 export const createLogger = (opts: Options): Logger => {
-
     isOptions(opts, (msg) => {
         throw new Error(`Invalid options: ${msg}`);
     });
@@ -340,12 +343,10 @@ export const createLogger = (opts: Options): Logger => {
     return nsLogger(filterNs(opts.appName));
 };
 
-
 /**
  * Create a logger that doesn't log to syslog. It does however log to console.
  */
 export const createVoidLogger = (disableConsole = false): Logger => {
-
     // to console
     const conslogger = disableConsole ? null : createConsLogger(console);
 

@@ -71,20 +71,21 @@ export interface Transport {
  * Construct a syslog row given the message.
  */
 export const rfc5424Row = (msg: SyslogMessage): string => {
-    const pri = (msg.facility * 8) + msg.severity;
+    const pri = msg.facility * 8 + msg.severity;
     const time = (msg.timestamp || new Date()).toISOString();
-    const newline = msg.message[msg.message.length - 1] === "\n" ? "" : "\n";
+    const newline = msg.message[msg.message.length - 1] === '\n' ? '' : '\n';
     const struct = rfc5424Structured(msg);
     const pid = msg.pid ? String(msg.pid) : undefined;
-    return `<${pri}>1 ${time} ${nil(msg.hostname)} ${nil(msg.appName)} ` +
-        `${nil(pid)} ${nil(msg.msgId)} ${nil(struct)} ${msg.message}${newline}`;
+    return (
+        `<${pri}>1 ${time} ${nil(msg.hostname)} ${nil(msg.appName)} ` +
+        `${nil(pid)} ${nil(msg.msgId)} ${nil(struct)} ${msg.message}${newline}`
+    );
 };
 
 const RE_7BIT = /[\x00-\x7F]+/;
 const is7bit = (s?: string) => !!s && !!RE_7BIT.exec(s);
-const nil = (s?: string) => is7bit(s) ? s : '-';
-const escapeSdParam = (v: string) =>
-    v.replace(/\\/g, '\\\\').replace(/\"/g, '\\"').replace(/]/g, '\\]');
+const nil = (s?: string) => (is7bit(s) ? s : '-');
+const escapeSdParam = (v: string) => v.replace(/\\/g, '\\\\').replace(/\"/g, '\\"').replace(/]/g, '\\]');
 
 // example log row:
 // <134>1 2019-03-12T22:30:09.671872+00:00 dormammu.dev.lookback.io dormammu 4 -
@@ -149,7 +150,7 @@ export const createClient = async (copts: ClientOpts): Promise<Client> => {
     const connect = copts.httpEndpoint ? connectHttp(copts.httpEndpoint) : connectSocket;
 
     let lastErr: Error | undefined = undefined;
-    const conn = await connect(copts).catch(e => {
+    const conn = await connect(copts).catch((e) => {
         lastErr = e;
         return null;
     });
@@ -157,8 +158,7 @@ export const createClient = async (copts: ClientOpts): Promise<Client> => {
         const disconnect = (e: Error) => {
             try {
                 conn.end();
-            } catch (e) {
-            }
+            } catch (e) {}
             if (lastErr) return; // already disconnected
             lastErr = e;
         };
@@ -173,21 +173,22 @@ export const createClient = async (copts: ClientOpts): Promise<Client> => {
         });
     }
     return {
-        send: (msg: SyslogMessage): Promise<void> => new Promise((rs, rj) => {
-            try {
-                if (lastErr || !conn) {
-                    return rj(new Error('Not connected'));
-                }
-                conn.write(rfc5424Row(msg), (e: Error | null) => {
-                    if (e) {
-                        rj(e);
-                    } else {
-                        rs();
+        send: (msg: SyslogMessage): Promise<void> =>
+            new Promise((rs, rj) => {
+                try {
+                    if (lastErr || !conn) {
+                        return rj(new Error('Not connected'));
                     }
-                });
-            } catch (e) {
-                rj(e);
-            }
-        }),
+                    conn.write(rfc5424Row(msg), (e: Error | null) => {
+                        if (e) {
+                            rj(e);
+                        } else {
+                            rs();
+                        }
+                    });
+                } catch (e) {
+                    rj(e);
+                }
+            }),
     };
 };

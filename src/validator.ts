@@ -1,4 +1,3 @@
-
 export type Validator = { [key: string]: string };
 
 export const mkValidator = <T>(validator: Validator, required?: string[]) => {
@@ -13,7 +12,7 @@ export const mkValidator = <T>(validator: Validator, required?: string[]) => {
                 reject && reject(`${f} is not an expected field in ${JSON.stringify(t)}`);
                 return false;
             }
-            if ((typeof t[f]) !== type) {
+            if (typeof t[f] !== type) {
                 reject && reject(`${f} is not a ${type}`);
                 return false;
             }

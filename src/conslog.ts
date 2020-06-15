@@ -17,7 +17,7 @@ export const createConsLogger = (output: Output): LoggerImpl => async (prep: Pre
             fn.call(output, prep.severity, message, merged);
         } else {
             const util = require('util');
-            const mergedFormat =  util.inspect(merged, {
+            const mergedFormat = util.inspect(merged, {
                 compact: false,
                 colors: true,
                 breakLength: 16,

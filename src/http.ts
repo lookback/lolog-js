@@ -9,8 +9,8 @@ interface Todo {
 /**
  * Create a websocket transport for syslog messages.
  */
-export const connectHttp = (endpoint: string) =>
-    (copts: ClientOpts): Promise<Transport> => new Promise((rs) => {
+export const connectHttp = (endpoint: string) => (copts: ClientOpts): Promise<Transport> =>
+    new Promise((rs) => {
         const proto = copts.useTls ? 'https' : 'http';
         const url = `${proto}://${copts.host}:${copts.port}${endpoint}`;
 
@@ -37,11 +37,11 @@ export const connectHttp = (endpoint: string) =>
             }
 
             // messages are already terminated with \n
-            const body = to_send.map(t => t.msg).join('');
+            const body = to_send.map((t) => t.msg).join('');
 
             // callback over all listeners
             const cb = (err: null | Error) => {
-                to_send.forEach(t => t.cb(err));
+                to_send.forEach((t) => t.cb(err));
             };
 
             // attempt to send the batch
@@ -50,7 +50,7 @@ export const connectHttp = (endpoint: string) =>
                 mode: 'cors',
                 body,
             })
-                .then(res => {
+                .then((res) => {
                     // res status 0 is cors
                     if (res.status != 200 && res.status != 0) {
                         const msg = `POST ${url}: ${res.status} ${res.statusText}`;
@@ -59,7 +59,7 @@ export const connectHttp = (endpoint: string) =>
                     cb(null);
                     return Promise.resolve();
                 })
-                .catch(e => {
+                .catch((e) => {
                     cb(e);
                 })
                 .finally(() => {
@@ -77,18 +77,15 @@ export const connectHttp = (endpoint: string) =>
 
         // shim over fetch to adapt to a node net.Socket
         const sock: Transport = {
-            setTimeout: (ms, cb) => {
-            },
+            setTimeout: (ms, cb) => {},
             end: () => {
                 if (send_timeout) {
                     clearTimeout(send_timeout);
                     send_timeout = null;
                 }
             },
-            on: (n, cb) => {
-            },
-            removeAllListeners: () => {
-            },
+            on: (n, cb) => {},
+            removeAllListeners: () => {},
             write: (msg, cb) => {
                 const time = Date.now();
                 todo.push({ time, msg, cb });
