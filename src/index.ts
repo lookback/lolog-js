@@ -130,6 +130,14 @@ export interface Logger {
     error: LogFunction;
 
     /**
+     * Track an analytics event.
+     *
+     * Analytics "piggy backs" on our log system. Collection is done same as for
+     * logging, but they are separated off on the backend.
+     */
+    track: (event: string, wellKnown: WellKnown, data: Data) => void;
+
+    /**
      * Create a sublogger that will be namespaced under this logger. Limited to `/[a-z0-9-]+/`.
      */
     sublogger: (subname: string) => Logger;
@@ -310,6 +318,9 @@ const mkNnsLogger = (syslogger: LoggerImpl | null, conslogger: LoggerImpl | null
             info: (...args: any[]) => doLog(Severity.Info, args),
             warn: (...args: any[]) => doLog(Severity.Warn, args),
             error: (...args: any[]) => doLog(Severity.Error, args),
+            track: (event: string, wk: WellKnown, data: Data) =>
+                // "tracking" is a special namespace just for tracking events
+                doLog(Severity.Info, [event, { ...wk, appName: 'tracking' }, data]),
             sublogger: (sub: string) => nsLogger(`${namespace}.${filterNs(sub)}`),
             rootLogger: (appName: string) => nsLogger(filterNs(appName)),
             setDebug: (debug: boolean) => {
@@ -381,6 +392,7 @@ export const createProxyLogger = (target: Logger): ProxyLogger => {
         info: (...args: any[]) => t.info.apply(t, args),
         warn: (...args: any[]) => t.warn.apply(t, args),
         error: (...args: any[]) => t.error.apply(t, args),
+        track: (...args: any[]) => t.track.apply(t, args),
         sublogger: (sub: string) => {
             const actual = t.sublogger.call(t, sub);
             return createDependent(sub, actual);
