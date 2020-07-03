@@ -179,7 +179,8 @@ export const createClient = async (copts: ClientOpts): Promise<Client> => {
                     if (lastErr || !conn) {
                         return rj(new Error('Not connected'));
                     }
-                    conn.write(rfc5424Row(msg), (e: Error | null) => {
+                    const row = rfc5424Row(msg);
+                    conn.write(row, (e: Error | null) => {
                         if (e) {
                             rj(e);
                         } else {

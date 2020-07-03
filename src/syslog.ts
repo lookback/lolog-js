@@ -126,7 +126,7 @@ const prepToSyslog = (prep: PreparedLog, opts: Options): SyslogMessage => ({
     message: prep.merged ? `${prep.message} ${JSON.stringify(prep.merged)}` : prep.message,
     hostname: opts.host,
     appName: prep.appName,
-    msgId: !opts.disableUuid ? randomId(24) : undefined,
+    msgId: !opts.disableUuid ? randomId() : undefined,
     pid: opts.appVersion || process.pid,
     apiKeyId: opts.apiKeyId,
     apiKey: opts.apiKey,
