@@ -139,7 +139,7 @@ const prepToSyslog = (prep: PreparedLog, opts: Options): SyslogMessage => ({
 const RANDOM_CHARS = 'abcdefghjkmnpqrstuvxyzABCDEFGHJKLMNPQRSTUVXYZ23456789';
 
 /** Generate a mongo friendly random id */
-export const randomId = (length: number = 17): string =>
+export const randomId = (length: number = 40): string =>
     Array.apply(null, { length })
         .map(() => RANDOM_CHARS[Math.floor(Math.random() * RANDOM_CHARS.length)])
         .join('');
