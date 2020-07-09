@@ -146,15 +146,6 @@ export interface Logger {
      * Create a new root logger that will start a new namespace.  Limited to `/[a-z0-9-]+/`.
      */
     rootLogger: (appName: string) => Logger;
-
-    /**
-     * Enable sending debug level logs to the log host for this logger. The default
-     * is to only send INFO level and above. DEBUG can be enabled while finding an error.
-     * TRACE is only ever logged to console.
-     *
-     * Notice that this only toggles the current logger, not any subloggers.
-     */
-    setDebug: (debug: boolean) => void;
 }
 
 /**
@@ -295,7 +286,6 @@ export let __lastLogResult: Promise<LogResult> | null = null;
 // create a logger for a namespace
 const mkNnsLogger = (syslogger: LoggerImpl | null, conslogger: LoggerImpl | null) => {
     const nsLogger = (namespace: string) => {
-        let sendDebug = false;
         const doLog = (severity: Severity, args: any[]) => {
             const prep = prepareLog(severity, namespace, args);
             if (!prep) return;
@@ -305,9 +295,7 @@ const mkNnsLogger = (syslogger: LoggerImpl | null, conslogger: LoggerImpl | null
             if (
                 syslogger != null &&
                 // never syslog TRACE
-                prep.severity != Severity.Trace &&
-                // only syslog DEBUG if sendDebug flag
-                (prep.severity != Severity.Debug || sendDebug)
+                prep.severity != Severity.Trace
             ) {
                 __lastLogResult = syslogger(prep);
             }
@@ -323,9 +311,6 @@ const mkNnsLogger = (syslogger: LoggerImpl | null, conslogger: LoggerImpl | null
                 doLog(Severity.Info, [event, { ...wk, appName: 'tracking' }, data]),
             sublogger: (sub: string) => nsLogger(`${namespace}.${filterNs(sub)}`),
             rootLogger: (appName: string) => nsLogger(filterNs(appName)),
-            setDebug: (debug: boolean) => {
-                sendDebug = debug;
-            },
         };
     };
     return nsLogger;
@@ -401,7 +386,6 @@ export const createProxyLogger = (target: Logger): ProxyLogger => {
             const actual = t.rootLogger.call(t, appName);
             return createDependent(`ROOT_${appName}`, actual);
         },
-        setDebug: (debug: boolean) => t.setDebug.call(t, debug),
         setProxyTarget(target: Logger): void {
             t = target;
             Object.entries(dependent).forEach(([n, logger]) => {
