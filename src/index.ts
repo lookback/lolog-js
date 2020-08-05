@@ -135,7 +135,7 @@ export interface Logger {
      * Analytics "piggy backs" on our log system. Collection is done same as for
      * logging, but they are separated off on the backend.
      */
-    track: (event: string, wellKnown: WellKnown, data: Data) => void;
+    track: (event: string, wellKnown?: WellKnown, data?: Data) => void;
 
     /**
      * Create a sublogger that will be namespaced under this logger. Limited to `/[a-z0-9-]+/`.
@@ -306,9 +306,9 @@ const mkNnsLogger = (syslogger: LoggerImpl | null, conslogger: LoggerImpl | null
             info: (...args: any[]) => doLog(Severity.Info, args),
             warn: (...args: any[]) => doLog(Severity.Warn, args),
             error: (...args: any[]) => doLog(Severity.Error, args),
-            track: (event: string, wk: WellKnown, data: Data) =>
+            track: (event: string, wk?: WellKnown, data?: Data) =>
                 // "tracking" is a special namespace just for tracking events
-                doLog(Severity.Info, [event, { ...wk, appName: 'tracking' }, data]),
+                doLog(Severity.Info, [event, { ...(wk || {}), appName: 'tracking' }, data || {}]),
             sublogger: (sub: string) => nsLogger(`${namespace}.${filterNs(sub)}`),
             rootLogger: (appName: string) => nsLogger(filterNs(appName)),
         };
