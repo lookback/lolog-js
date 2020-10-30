@@ -46,6 +46,11 @@ export interface WellKnown {
     teamId?: string;
 
     /**
+     * Invitation id.
+     */
+    invitationId?: string;
+
+    /**
      * Ip address of user in question. Be very restrictive with logging this.
      */
     userIp?: string;

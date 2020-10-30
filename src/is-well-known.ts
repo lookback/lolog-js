@@ -8,6 +8,7 @@ const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
     recordingId: 'string',
     userId: 'string',
     teamId: 'string',
+    invitationId: 'string',
     userIp: 'string',
     sessionId: 'string',
     metricGroup: 'string',
