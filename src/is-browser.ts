@@ -1,3 +1,3 @@
-const checkBrowser = new Function('try {return this===window;}catch(e){ return false;}');
+const checkBrowser = () => typeof window != 'undefined';
 
 export const isBrowser: boolean = checkBrowser();
