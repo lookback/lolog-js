@@ -7,7 +7,7 @@ interface Todo {
 }
 
 /**
- * Create a websocket transport for syslog messages.
+ * Create a HTTP transport for syslog messages.
  */
 export const connectHttp = (endpoint: string) => (copts: ClientOpts): Promise<Transport> =>
     new Promise((rs) => {
@@ -86,10 +86,13 @@ export const connectHttp = (endpoint: string) => (copts: ClientOpts): Promise<Tr
             },
             on: (n, cb) => {},
             removeAllListeners: () => {},
-            write: (msg, cb) => {
+            write: (msg, cb, flush) => {
                 const time = Date.now();
                 todo.push({ time, msg, cb });
-                if (!send_timeout) {
+
+                if (flush) {
+                    doSend();
+                } else if (!send_timeout) {
                     schedule(time);
                 }
             },

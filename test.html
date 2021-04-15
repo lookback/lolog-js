@@ -1,28 +1,59 @@
 <html>
+  <head>
+    <title>lolog test</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+  </head>
 
-<head>
-  <title>lolog test</title>
-</head>
+  <body>
+    <h1>Open your JS console!</h1>
 
-<body>
-  <script src="./lolog.js"></script>
-  <script>
-    const lolog = require('lolog');
-    const log = lolog.createLogger({
-      logHost: 'logrelay-http.lookback.io',
-      logPort: 443,
-      //logHost: 'localhost',
-      //logPort: 8888,
-      //disableTls: true,
-      host: 'browser',
-      appName: 'chrome',
-      apiKeyId: 'chrome',
-      apiKey: 'PTYXZkufbVMrEYFtuuhqJsokutNx7Bpi',
-      env: 'testing',
-      compliance: lolog.Compliance.Full,
-    });
-    log.info('hello', { recordingId: 'abc123' }, { random: 42 });
-  </script>
-</body>
+    <script src="./lolog.js"></script>
+    <script>
+      const lolog = require('lolog');
+      const log = lolog.createLogger({
+        logHost: 'logrelay-http.lookback.io',
+        logPort: 443,
+        //logHost: 'localhost',
+        //logPort: 8888,
+        //disableTls: true,
+        host: 'browser',
+        appName: 'chrome',
+        apiKeyId: 'chrome',
+        apiKey: 'PTYXZkufbVMrEYFtuuhqJsokutNx7Bpi',
+        env: 'testing',
+        compliance: lolog.Compliance.Full,
+      });
 
+      // this one will be sent as usual: in a batch. You'll see the "log" request
+      // appear in the inspector's Network panel after a few seconds.
+      log.info(
+        'hello',
+        { recordingId: 'abc123', callback: () => console.log('regular message') },
+        { random: 42 },
+      );
+
+      // This one will be sent instantly though, thanks to flush: true. You should
+      // be able to see it on page load in the Network panel. Note that it'll flush
+      // *all* currently non-flushed messages, so you'll probably see the callback
+      // from the test log above before this one.
+      log.info(
+        'to be flushed',
+        {
+          recordingId: 'abc124',
+          flush: true,
+          callback: () => {
+            console.log('from flush callback');
+          },
+        },
+        { random: 43 },
+      );
+    </script>
+  </body>
 </html>
