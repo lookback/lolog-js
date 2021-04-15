@@ -150,8 +150,14 @@ export interface Logger {
      *
      * Analytics "piggy backs" on our log system. Collection is done same as for
      * logging, but they are separated off on the backend.
+     * 
+     * Function always flushes the logged events.
+     * 
+     * Function also returns a Promise that can be awaited to have a guarantee the 
+     * tracking event has been sent to the server. There is no guaranteed delivery to
+     * our log ingester, so awaiting the promise only ensures a completed send.
      */
-    track: (event: string, wellKnown?: WellKnown, data?: Data) => void;
+    track: (event: string, wellKnown?: WellKnown, data?: Data) => Promise<void>;
 
     /**
      * Create a sublogger that will be namespaced under this logger. Limited to `/[a-z0-9-]+/`.
@@ -299,6 +305,8 @@ const filterNs = (sub: string) => sub.toLowerCase().replace(/[^a-z0-9-]/g, '');
 /** Exported log result for use in tests. */
 export let __lastLogResult: Promise<LogResult> | null = null;
 
+const VOID = (() => {})();
+
 // create a logger for a namespace
 const mkNnsLogger = (syslogger: LoggerImpl | null, conslogger: LoggerImpl | null) => {
     const nsLogger = (namespace: string) => {
@@ -322,9 +330,29 @@ const mkNnsLogger = (syslogger: LoggerImpl | null, conslogger: LoggerImpl | null
             info: (...args: any[]) => doLog(Severity.Info, args),
             warn: (...args: any[]) => doLog(Severity.Warn, args),
             error: (...args: any[]) => doLog(Severity.Error, args),
-            track: (event: string, wk?: WellKnown, data?: Data) =>
-                // "tracking" is a special namespace just for tracking events
-                doLog(Severity.Info, [event, { ...(wk || {}), appName: 'tracking' }, data || {}]),
+            track: (event: string, wk?: WellKnown, data?: Data): Promise<void> =>
+                new Promise((rs) => {
+                    // "tracking" is a special namespace just for tracking events
+                    let appName = 'tracking';
+
+                    // Use callback to make a Promise<void> return. 
+                    let callback = () => {
+                        try {
+                            (<any>wk)?.callback?.();
+                        } catch (e) {
+                            // ignore
+                        }
+                        rs(VOID);
+                    };
+
+                    let lwk = {
+                        appName,
+                        callback,
+                        flush: true,
+                    };
+
+                    doLog(Severity.Info, [event, { ...(wk || {}), ...lwk }, data || {}]);
+                }),
             sublogger: (sub: string) => nsLogger(`${namespace}.${filterNs(sub)}`),
             rootLogger: (appName: string) => nsLogger(filterNs(appName)),
         };

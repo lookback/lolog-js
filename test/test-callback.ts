@@ -25,3 +25,15 @@ test('log callback', async () => {
 /** Creates a Promise which will reject after `ms` milliseconds. */
 const wait = (ms: number) =>
     new Promise<string>((_, rj) => setTimeout(() => rj(`Timed out after ${ms}ms`), ms));
+
+test('trace promise return', async () => {
+    const { log } = await createMockLogger();
+
+    const waitPromise = wait(1000);
+
+    const logPromise = log.track('hej');
+
+    await Promise.race([waitPromise, logPromise]);
+
+    assert.ok('promise did resolve');
+});
