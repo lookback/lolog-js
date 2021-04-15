@@ -11,7 +11,7 @@ test('filterUnwanted', () => {
     assert.deepEqual(filterUnwanted({}), {});
     assert.deepEqual(filterUnwanted({ k: 42, j: 43 }), { k: 42, j: 43 });
     assert.deepEqual(filterUnwanted({ k: undefined }), {});
-    assert.deepEqual(filterUnwanted({ k: new Buffer('') }), {});
+    assert.deepEqual(filterUnwanted({ k: Buffer.from('') }), {});
     assert.deepEqual(filterUnwanted([]), []);
     assert.deepEqual(filterUnwanted([1, 2]), [1, 2]);
     assert.deepEqual(filterUnwanted([1, undefined]), [1]);
