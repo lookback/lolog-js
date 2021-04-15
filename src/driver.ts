@@ -49,6 +49,10 @@ export interface SyslogMessage {
     apiKeyId?: string;
     apiKey?: string;
     tags?: { [key: string]: string };
+    // HTTP only
+    flush?: boolean;
+    // HTTP only
+    callback?: (err?: Error) => void;
 }
 
 /**
@@ -64,7 +68,7 @@ export interface Transport {
     /** Remove all registered event listeners. */
     removeAllListeners: () => void;
     /** Write the given string to the underlying transport. */
-    write: (msg: string, cb: (e: Error | null) => void) => void;
+    write: (msg: string, cb: (e: Error | null) => void, flush: boolean) => void;
 }
 
 /**
@@ -180,13 +184,19 @@ export const createClient = async (copts: ClientOpts): Promise<Client> => {
                         return rj(new Error('Not connected'));
                     }
                     const row = rfc5424Row(msg);
-                    conn.write(row, (e: Error | null) => {
-                        if (e) {
-                            rj(e);
-                        } else {
-                            rs();
-                        }
-                    });
+                    conn.write(
+                        row,
+                        (e: Error | null) => {
+                            if (e) {
+                                msg.callback?.(e);
+                                rj(e);
+                            } else {
+                                msg.callback?.();
+                                rs();
+                            }
+                        },
+                        !!msg.flush,
+                    );
                 } catch (e) {
                     rj(e);
                 }

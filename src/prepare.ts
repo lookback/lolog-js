@@ -22,6 +22,8 @@ export interface PreparedLog {
     message: string;
     merged?: { [key: string]: any };
     disableConsole: boolean;
+    flush: boolean;
+    callback?: () => void;
 }
 
 /**
@@ -58,6 +60,12 @@ export const prepareLog = (
     const disableConsole = !!(<any>well).disableConsole;
     delete (<any>well).disableConsole;
 
+    const flush: boolean = (<any>well).flush ?? false;
+    delete (<any>well).flush;
+
+    const callback: (() => void) | undefined = (<any>well).callback || undefined;
+    delete (<any>well).callback;
+
     const dataLen = Object.keys(data).length;
     const mergaroo: { [key: string]: any } = { ...well, ...(dataLen ? { data } : {}) };
 
@@ -70,6 +78,8 @@ export const prepareLog = (
         message,
         merged,
         disableConsole,
+        flush,
+        callback,
     };
 };
 

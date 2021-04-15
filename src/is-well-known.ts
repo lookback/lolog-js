@@ -2,7 +2,7 @@ import { mkValidator } from './validator';
 import { WellKnown } from '.';
 
 // keep in sync with interface definition
-const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
+const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' | 'function' } = {
     timestamp: 'number',
     appName: 'string',
     recordingId: 'string',
@@ -12,6 +12,8 @@ const WellKnown: { [k: string]: 'string' | 'number' | 'boolean' } = {
     sessionId: 'string',
     metricGroup: 'string',
     disableConsole: 'boolean',
+    callback: 'function',
+    flush: 'boolean',
 };
 
 /**

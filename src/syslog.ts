@@ -133,6 +133,8 @@ const prepToSyslog = (prep: PreparedLog, opts: Options): SyslogMessage => ({
     tags: {
         env: opts.env,
     },
+    flush: prep.flush,
+    callback: prep.callback,
 });
 
 /** Deliberately not including easily confusable chars, 0, O, l, 1 etc */

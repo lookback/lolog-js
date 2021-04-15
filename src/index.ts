@@ -88,6 +88,22 @@ export interface LocalWellKnown extends WellKnown {
      * Disable console log for this message. Useful for telemetry etc.
      */
     disableConsole?: boolean;
+
+    /** Will be called when this message has been sent off over HTTP (flushed).
+     *
+     * @see `flush` option
+     * @kind HTTP
+     */
+    callback?: () => void;
+
+    /** When using HTTP (typically when in the browser), lolog will default to send off
+     * messages in batches. Providing `flush: true` means that we'll send off this message
+     * *and any other in the queue* instantly instead of batching.
+     *
+     * @see `callback` if you'd like to be notified when *this* message was sent
+     * @kind HTTP
+     */
+    flush?: boolean;
 }
 
 /**
