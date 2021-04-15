@@ -9,7 +9,7 @@
     "test": "loltest",
     "prebuild": "npm run clean",
     "build": "tsc && tsc --module esnext --outDir build/es && browserify -r ./build/cjs/index.js:lolog ./build/cjs/index.js> ./lolog.js",
-    "watch": "tsc -w",
+    "start": "tsc -w",
     "clean": "rm -rf build",
     "prepublishOnly": "npm run build"
   },
