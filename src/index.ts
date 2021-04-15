@@ -150,10 +150,10 @@ export interface Logger {
      *
      * Analytics "piggy backs" on our log system. Collection is done same as for
      * logging, but they are separated off on the backend.
-     * 
+     *
      * Function always flushes the logged events.
-     * 
-     * Function also returns a Promise that can be awaited to have a guarantee the 
+     *
+     * Function also returns a Promise that can be awaited to have a guarantee the
      * tracking event has been sent to the server. There is no guaranteed delivery to
      * our log ingester, so awaiting the promise only ensures a completed send.
      */
@@ -335,7 +335,7 @@ const mkNnsLogger = (syslogger: LoggerImpl | null, conslogger: LoggerImpl | null
                     // "tracking" is a special namespace just for tracking events
                     let appName = 'tracking';
 
-                    // Use callback to make a Promise<void> return. 
+                    // Use callback to make a Promise<void> return.
                     let callback = () => {
                         try {
                             (<any>wk)?.callback?.();
