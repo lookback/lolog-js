@@ -10,7 +10,7 @@ export interface Output {
 }
 
 export const createConsLogger = (output: Output): LoggerImpl => async (prep: PreparedLog) => {
-    const { severity, message, merged } = prep;
+    const { severity, message, merged, callback } = prep;
     const fn = selectFn(output, severity);
     if (merged) {
         if (isBrowser) {
@@ -28,6 +28,9 @@ export const createConsLogger = (output: Output): LoggerImpl => async (prep: Pre
     } else {
         fn.call(output, prep.severity, message);
     }
+
+    callback?.();
+
     return {
         attempts: 1,
     };
