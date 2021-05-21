@@ -26,5 +26,4 @@ test('filterUnwanted', () => {
     const err = filterUnwanted({ cause: new Error('Msg') });
     assert.deepEqual(err.cause.name, 'Error');
     assert.deepEqual(err.cause.message, 'Msg');
-    assert.deepEqual(typeof err.cause.stack, 'string');
 });

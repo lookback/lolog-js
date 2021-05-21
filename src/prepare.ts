@@ -86,7 +86,6 @@ export const prepareLog = (
 export interface SerializedError {
     name: string;
     message: string;
-    stack?: string;
 }
 
 const isPrimitive = (val: any) => ['number', 'string', 'boolean'].includes(typeof val);
@@ -95,7 +94,7 @@ const isPrimitive = (val: any) => ['number', 'string', 'boolean'].includes(typeo
 export const serializeError = (err: Error): SerializedError =>
     Object.assign.apply(
         null,
-        ['name', 'message', 'stack']
+        ['name', 'message']
             // Filter out unwanted
             .filter((k) => isPrimitive((err as any)[k]))
             // Create new object array and spread the array on the return object
