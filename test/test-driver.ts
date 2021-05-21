@@ -9,7 +9,7 @@ test('rfc5424Row - message', () => {
         message: 'hello world',
         timestamp: new Date(1547104969669),
     });
-    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - - - hello world\n');
+    assert.deepStrictEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - - - hello world\n');
 });
 
 test('rfc5424Row - hostname', () => {
@@ -20,8 +20,10 @@ test('rfc5424Row - hostname', () => {
         timestamp: new Date(1547104969669),
         hostname: 'i-12345677.eu-west1',
     });
-    assert.deepEqual(row, '<142>1 2019-01-10T07:22:49.669Z ' +
-      'i-12345677.eu-west1 - - - - hello world\n');
+    assert.deepStrictEqual(
+        row,
+        '<142>1 2019-01-10T07:22:49.669Z ' + 'i-12345677.eu-west1 - - - - hello world\n',
+    );
 });
 
 test('rfc5424Row - appname', () => {
@@ -32,7 +34,7 @@ test('rfc5424Row - appname', () => {
         timestamp: new Date(1547104969669),
         appName: 'site-liveplayer',
     });
-    assert.deepEqual(row, '<135>1 2019-01-10T07:22:49.669Z - site-liveplayer - - - hello world\n');
+    assert.deepStrictEqual(row, '<135>1 2019-01-10T07:22:49.669Z - site-liveplayer - - - hello world\n');
 });
 
 test('rfc5424Row - procid (number)', () => {
@@ -43,7 +45,7 @@ test('rfc5424Row - procid (number)', () => {
         timestamp: new Date(1547104969669),
         pid: 12345,
     });
-    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - 12345 - - hello world\n');
+    assert.deepStrictEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - 12345 - - hello world\n');
 });
 
 test('rfc5424Row - procid (string)', () => {
@@ -54,7 +56,7 @@ test('rfc5424Row - procid (string)', () => {
         timestamp: new Date(1547104969669),
         pid: 'yo',
     });
-    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - yo - - hello world\n');
+    assert.deepStrictEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - yo - - hello world\n');
 });
 
 test('rfc5424Row - msgid', () => {
@@ -65,7 +67,7 @@ test('rfc5424Row - msgid', () => {
         timestamp: new Date(1547104969669),
         msgId: 'abcd12345',
     });
-    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - abcd12345 - hello world\n');
+    assert.deepStrictEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - abcd12345 - hello world\n');
 });
 
 test('rfc5424Row - apiKey', () => {
@@ -77,8 +79,10 @@ test('rfc5424Row - apiKey', () => {
         apiKeyId: 'chrome',
         apiKey: 'abcd12345',
     });
-    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - - ' +
-    '[chrome@53595 apiKey="abcd12345"] hello world\n');
+    assert.deepStrictEqual(
+        row,
+        '<134>1 2019-01-10T07:22:49.669Z - - - - ' + '[chrome@53595 apiKey="abcd12345"] hello world\n',
+    );
 });
 
 test('rfc5424Row - tags', () => {
@@ -92,8 +96,10 @@ test('rfc5424Row - tags', () => {
             bar: '123yy',
         },
     });
-    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - - ' +
-    '[foo="abc47" bar="123yy"] hello world\n');
+    assert.deepStrictEqual(
+        row,
+        '<134>1 2019-01-10T07:22:49.669Z - - - - ' + '[foo="abc47" bar="123yy"] hello world\n',
+    );
 });
 
 test('rfc5424Row - tags escaping', () => {
@@ -106,8 +112,10 @@ test('rfc5424Row - tags escaping', () => {
             foo: 'a"bc\\4]7',
         },
     });
-    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - - ' +
-    '[foo="a\\"bc\\\\4\\]7"] hello world\n');
+    assert.deepStrictEqual(
+        row,
+        '<134>1 2019-01-10T07:22:49.669Z - - - - ' + '[foo="a\\"bc\\\\4\\]7"] hello world\n',
+    );
 });
 
 test('rfc5424Row - apiKey + tags', () => {
@@ -122,6 +130,9 @@ test('rfc5424Row - apiKey + tags', () => {
             foo: 'abc47',
         },
     });
-    assert.deepEqual(row, '<134>1 2019-01-10T07:22:49.669Z - - - - ' +
-    '[chrome@53595 apiKey="apikey" foo="abc47"] hello world\n');
+    assert.deepStrictEqual(
+        row,
+        '<134>1 2019-01-10T07:22:49.669Z - - - - ' +
+            '[chrome@53595 apiKey="apikey" foo="abc47"] hello world\n',
+    );
 });

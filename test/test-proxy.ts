@@ -11,7 +11,7 @@ test('create proxy', () => {
     };
     const logger = createProxyLogger(target);
     logger.trace('hello world');
-    assert.deepEqual(foo, 'hello world');
+    assert.deepStrictEqual(foo, 'hello world');
 });
 
 test('switch proxy', () => {
@@ -28,8 +28,8 @@ test('switch proxy', () => {
     const logger = createProxyLogger(target1);
     logger.setProxyTarget(target2);
     logger.trace('hello world');
-    assert.deepEqual(foo1, null);
-    assert.deepEqual(foo2, 'hello world');
+    assert.deepStrictEqual(foo1, null);
+    assert.deepStrictEqual(foo2, 'hello world');
 });
 
 test('create proxy sublogger', async () => {
@@ -42,10 +42,10 @@ test('create proxy sublogger', async () => {
     logger.setProxyTarget(log);
     sublog.info('hello world', <any>{ timestamp: 1547104969669 });
     const m = await msg;
-    assert.deepEqual(
+    assert.deepStrictEqual(
         m,
         `<134>1 2019-01-10T07:22:49.669Z testhost test-app.live-player 2.11` +
-            ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`
+            ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`,
     );
 });
 
@@ -59,10 +59,10 @@ test('create proxy sublogger with same name', async () => {
     logger.setProxyTarget(log);
     sublog1.info('hello world', <any>{ timestamp: 1547104969669 });
     const m = await msg;
-    assert.deepEqual(
+    assert.deepStrictEqual(
         m,
         `<134>1 2019-01-10T07:22:49.669Z testhost test-app.live-player 2.11` +
-            ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`
+            ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`,
     );
 });
 
@@ -76,9 +76,9 @@ test('create proxy rootLogger', async () => {
     logger.setProxyTarget(log);
     sublog.info('hello world', <any>{ timestamp: 1547104969669 });
     const m = await msg;
-    assert.deepEqual(
+    assert.deepStrictEqual(
         m,
         `<134>1 2019-01-10T07:22:49.669Z testhost live-player 2.11` +
-            ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`
+            ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`,
     );
 });

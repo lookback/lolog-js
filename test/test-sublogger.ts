@@ -7,8 +7,11 @@ test('make sublogger', async () => {
     const sublog = log.sublogger('live-player');
     sublog.info('hello world', <any>{ timestamp: 1547104969669 });
     const m = await msg;
-    assert.deepEqual(m, `<134>1 2019-01-10T07:22:49.669Z testhost test-app.live-player 2.11` +
-        ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`);
+    assert.deepStrictEqual(
+        m,
+        `<134>1 2019-01-10T07:22:49.669Z testhost test-app.live-player 2.11` +
+            ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`,
+    );
 });
 
 test('make sublogger with bad chars', async () => {
@@ -16,6 +19,9 @@ test('make sublogger with bad chars', async () => {
     const sublog = log.sublogger('fett ÅÄÖ hej2!!!');
     sublog.info('hello world', <any>{ timestamp: 1547104969669 });
     const m = await msg;
-    assert.deepEqual(m, `<134>1 2019-01-10T07:22:49.669Z testhost test-app.fetthej2 2.11` +
-        ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`);
+    assert.deepStrictEqual(
+        m,
+        `<134>1 2019-01-10T07:22:49.669Z testhost test-app.fetthej2 2.11` +
+            ` - [u@53595 apiKey="apikey" env="testing"] hello world\n`,
+    );
 });
