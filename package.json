@@ -1,6 +1,6 @@
 {
   "name": "@lookback/lolog",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Lookback Log",
   "main": "build/cjs/index.js",
   "module": "build/es/index.js",
