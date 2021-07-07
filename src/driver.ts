@@ -49,14 +49,15 @@ export interface SyslogMessage {
     apiKeyId?: string;
     apiKey?: string;
     tags?: { [key: string]: string };
-    // HTTP only
-    flush?: boolean;
-    // HTTP only
+    flush?: boolean; // HTTP only
     callback?: (err?: Error) => void;
 }
 
 /**
  * Unifying minimal interface required of transport implementations.
+ *
+ * NB. It's important all function signatures below folllow that of NodeJS Socket.
+ * We can't introduce function signatures that differ between Http and Socket.
  */
 export interface Transport {
     /** Make transport time out after ms idle. */
@@ -68,7 +69,10 @@ export interface Transport {
     /** Remove all registered event listeners. */
     removeAllListeners: () => void;
     /** Write the given string to the underlying transport. */
-    write: (msg: string, cb: (e: Error | null) => void, flush: boolean) => void;
+    write: (msg: string, cb: (e: Error | null) => void) => void;
+    /** Flush the underlying transport, if possible.
+     * Notably this does not exist for TCP sockets. */
+    flush?: () => void;
 }
 
 /**
@@ -184,19 +188,25 @@ export const createClient = async (copts: ClientOpts): Promise<Client> => {
                         return rj(new Error('Not connected'));
                     }
                     const row = rfc5424Row(msg);
-                    conn.write(
-                        row,
-                        (e: Error | null) => {
-                            if (e) {
-                                msg.callback?.(e);
-                                rj(e);
-                            } else {
-                                msg.callback?.();
-                                rs();
+
+                    const onWrite = (e: Error | null) => {
+                        if (e) {
+                            rj(e);
+                        } else {
+                            // If we are to follow up with a flush,
+                            // do so on successful write.
+                            if (!!msg.flush) {
+                                conn.flush?.();
                             }
-                        },
-                        !!msg.flush,
-                    );
+
+                            // This is guaranteed to not fail by virtue of prepareLog.
+                            msg.callback!();
+
+                            rs();
+                        }
+                    };
+
+                    conn.write(row, onWrite);
                 } catch (e) {
                     rj(e);
                 }

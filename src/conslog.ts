@@ -29,7 +29,7 @@ export const createConsLogger = (output: Output): LoggerImpl => async (prep: Pre
         fn.call(output, prep.severity, message);
     }
 
-    callback?.();
+    callback();
 
     return {
         attempts: 1,

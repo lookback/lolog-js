@@ -23,7 +23,7 @@ export interface PreparedLog {
     merged?: { [key: string]: any };
     disableConsole: boolean;
     flush: boolean;
-    callback?: () => void;
+    callback: (err?: Error) => void;
 }
 
 /**
@@ -63,7 +63,14 @@ export const prepareLog = (
     const flush: boolean = (<any>well).flush ?? false;
     delete (<any>well).flush;
 
-    const callback: (() => void) | undefined = (<any>well).callback || undefined;
+    const actualCallback = (<any>well).callback || undefined;
+    const callback = () => {
+        try {
+            actualCallback?.();
+        } catch (e) {
+            console.warn('log callback failed', e);
+        }
+    };
     delete (<any>well).callback;
 
     const dataLen = Object.keys(data).length;

@@ -86,15 +86,16 @@ export const connectHttp = (endpoint: string) => (copts: ClientOpts): Promise<Tr
             },
             on: (n, cb) => {},
             removeAllListeners: () => {},
-            write: (msg, cb, flush) => {
+            write: (msg, cb) => {
                 const time = Date.now();
                 todo.push({ time, msg, cb });
-
-                if (flush) {
-                    doSend();
-                } else if (!send_timeout) {
+                if (!send_timeout) {
                     schedule(time);
                 }
+            },
+            flush: () => {
+                clearTimeout(send_timeout);
+                doSend();
             },
         };
 
